@@ -37,13 +37,13 @@ These folders also contain up-to-date copies of the repository and these are the
 
 ### Running the Code
 
-*	From the master branch, open 01_validation.R, run the entire script
+*	From the master branch, open `01_validation.R`, run the entire script
 *	Check for any errors and investigate if necessary - when satisfied with output, move to the next step
-* From the master branch, open and run 02_read_in_and_combine_files.R
+* From the master branch, open and run `02_read_in_and_combine_files.R`
 *	Check the output in data/output looks as it should
-*	From the master branch, open and run 03_census_and_bed_days.R
+*	From the master branch, open and run `03_census_and_bed_days.R`
 *	As above, check for any errors and look at the output to see if it looks as it should
-* From the master branch, open and run 04_trend_file.R
+* From the master branch, open and run `04_trend_file.R`
 * Finally, check for any errors and look at the output to see if it looks as it should
 
 The raw output files all have the publication date in the name, so there is no need to archive as each time the process is re-run, new files will be created. The only files which do get overwritten are the publication document files, but these are copied over to the publication folder as part of the normal publication process so are already archived. 
