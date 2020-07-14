@@ -2,5 +2,30 @@
 .Rhistory
 .RData
 .Ruserdata
+odbc_connect.R
 
+# 'data' folder #
 data/
+
+# Markdown output
+ISD-NATIONAL-STATS-REPORT.docx
+ISD-NATIONAL-STATS-SUMMARY.docx
+
+# Images
+*.png
+*.jpg
+*.jpeg
+
+# Common text files that may contain data #
+*.[cC][sS][vV]
+*.[tT][xX][tT]
+
+# Excel files #
+*.[xX][lL][sS][xXmMtT]?
+
+# SPSS formats #
+*.[sS][aA][vV]
+
+# R data files #
+*.[rR][dD][aA][tT][aA]
+*.[rR][dD][sS]
