@@ -28,11 +28,12 @@ library(here)         # For the here() function
 library(phsmethods)   # For internal PHS functions
 library(magrittr)     # For the %<>%
 library(glue)         # For working with strings
+library(almanac)      # For working with recurring dates
 
 
-### 2 - Define month end date ----
+### 2 - Define month start date ----
 
-end_date <- dmy(30042020)
+start_month <- dmy(01042020)
 
 
 ### 3 - Define filepaths dependent on whether running or server or desktop ----
