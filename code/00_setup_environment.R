@@ -27,6 +27,7 @@ library(haven)        # For reading in SPSS files
 library(here)         # For the here() function
 library(phsmethods)   # For internal PHS functions
 library(magrittr)     # For the %<>%
+library(glue)         # For working with strings
 
 
 ### 2 - Define month end date ----
@@ -34,19 +35,53 @@ library(magrittr)     # For the %<>%
 end_date <- dmy(30042020)
 
 
-### 3 - Define whether running or server or desktop
+### 3 - Define filepaths dependent on whether running or server or desktop ----
 
-if(sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)"){
-  platform <- "server"
-}else{
-  platform <- "desktop"
+stats <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
+  TRUE ~ "//stats"
+)
+
+cl_out <- case_when(
+  sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ 
+    "/conf/linkage/output",
+  TRUE ~ "//stats/cl-out"
+)
+
+
+### 4 - Define lookup files ----
+
+postcode <- function(){
+  glue("{cl_out}/lookups/Unicode/Geography/Scottish Postcode Directory/",
+       "Scottish_Postcode_Directory_2020_1.rds") %>%
+    read_rds() %>%
+    clean_names() %>%
+    select(pc7, datazone = datazone2011)
 }
-
-# Define root directory for stats server based on whether script is running 
-# locally or on server
-filepath <- if_else(platform == "server",
-                    "/conf/linkage/output/",
-                    "//stats/cl-out/")
+  
+specialty <- function(){
+  glue("{cl_out}/lookups/Unicode/National Reference Files/specialt.rds") %>%
+    read_rds() %>%
+    clean_names() %>%
+    select(spec_code = speccode, spec_desc = description)
+}
+  
+location <- function(){
+  glue("{cl_out}/lookups/Unicode/National Reference Files/location.rds") %>%
+    read_rds() %>%
+    clean_names() %>%
+    select(location, location_name = locname)
+}
+  
+hscp_locality <- function(){
+  glue("{cl_out}/lookups/Unicode/Geography/HSCP Locality/",
+       "HSCP Localities_DZ11_Lookup_20191216.rds") %>%
+    read_rds() %>%
+    clean_names() %>%
+    select(datazone = datazone2011,
+           hscp = hscp2019name,
+           locality = hscp_locality)
+}
 
 
 ### END OF SCRIPT ###
