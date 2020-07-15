@@ -14,4 +14,39 @@
 #########################################################################
 
 
+### 1 - Load packages ----
+
+library(dplyr)        # For data manipulation in the "tidy" way
+library(tidyr)        # For data manipulation in the "tidy" way
+library(lubridate)    # For dealing with dates
+library(stringr)      # For string manipulation and matching
+library(janitor)      # For 'cleaning' variable names
+library(purrr)        # For functional programming
+library(readr)        # For reading files
+library(haven)        # For reading in SPSS files
+library(here)         # For the here() function
+library(phsmethods)   # For internal PHS functions
+library(magrittr)     # For the %<>%
+
+
+### 2 - Define month end date ----
+
+end_date <- dmy(30042020)
+
+
+### 3 - Define whether running or server or desktop
+
+if(sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)"){
+  platform <- "server"
+}else{
+  platform <- "desktop"
+}
+
+# Define root directory for stats server based on whether script is running 
+# locally or on server
+filepath <- if_else(platform == "server",
+                    "/conf/linkage/output/",
+                    "//stats/cl-out/")
+
+
 ### END OF SCRIPT ###
