@@ -31,9 +31,11 @@ library(glue)         # For working with strings
 library(almanac)      # For working with recurring dates
 
 
-### 2 - Define month start date ----
+### 2 - Define month start date and derive end date ----
 
 start_month <- dmy(01042020)
+
+end_month <- ceiling_date(start_month, "month") - days(1)
 
 
 ### 3 - Define filepaths dependent on whether running or server or desktop ----
