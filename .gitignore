@@ -4,8 +4,9 @@
 .Ruserdata
 odbc_connect.R
 
-# 'data' folder #
+# data folders #
 data/
+trend/
 
 # Markdown output
 ISD-NATIONAL-STATS-REPORT.docx
