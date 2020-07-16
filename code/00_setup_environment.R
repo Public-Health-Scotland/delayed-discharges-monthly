@@ -4,13 +4,13 @@
 # Original Authors - Alice Byers
 # Orginal Date - July 2020
 #
-# Type - Reproducible Analytical Pipeline
+# Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server
 # Version of R - 3.6.1
 #
 # Description - Sets up environment required for running publication RAP. 
-# This is the only file which should require updating every
-# time the RAP process is run
+# This is the only file which should require updating every time the RAP 
+# process is run
 #########################################################################
 
 
@@ -38,7 +38,7 @@ start_month <- dmy(01042020)
 end_month <- ceiling_date(start_month, "month") - days(1)
 
 
-### 3 - Define filepaths dependent on whether running or server or desktop ----
+### 3 - Define filepaths dependent on whether running on server or desktop ----
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
