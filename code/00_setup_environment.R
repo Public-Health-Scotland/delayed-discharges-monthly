@@ -29,6 +29,7 @@ library(phsmethods)   # For internal PHS functions
 library(magrittr)     # For the %<>%
 library(glue)         # For working with strings
 library(almanac)      # For working with recurring dates
+library(usethis)      # For creating new folders
 
 
 ### 2 - Define month start date and derive end date ----
@@ -38,7 +39,20 @@ start_month <- dmy(01042020)
 end_month <- ceiling_date(start_month, "month") - days(1)
 
 
-### 3 - Define filepaths dependent on whether running on server or desktop ----
+### 3 - Create data folders ----
+
+hb <- c("a&a", "borders", "d&g", "fife", "fv", "glasgow", "grampian", 
+        "highland", "lanark", "lothian", "orkney", "shetland", "tayside", "wi")
+
+# Create submission folder for every board
+paste0("data/", format(start_month, "%Y-%m"), "/submitted/", boards) %>%
+  walk(use_directory)
+
+# Create folder for trend files
+use_directory("trend")
+
+
+### 4 - Define filepaths dependent on whether running on server or desktop ----
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
@@ -52,7 +66,7 @@ cl_out <- case_when(
 )
 
 
-### 4 - Define lookup files ----
+### 5 - Define lookup files ----
 
 postcode <- function(){
   glue("{cl_out}/lookups/Unicode/Geography/Scottish Postcode Directory/",
