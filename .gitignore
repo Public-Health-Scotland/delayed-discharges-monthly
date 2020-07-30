@@ -33,3 +33,4 @@ ISD-NATIONAL-STATS-SUMMARY.docx
 
 # Allow lookups folder 
 !lookups/acute-hospitals.rds
+!lookups/local-authority.rds
