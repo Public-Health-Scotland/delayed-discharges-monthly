@@ -38,10 +38,22 @@ scotland <-
 
 ### 2 - Exclusions ----
 
+# Remove under 18s
+scotland %<>%
+  mutate(age_at_rdd = 
+           interval(patient_dob, readyfordischargedate) %>%
+           time_length("year") %>%
+           floor()) %>%
+  filter(age_at_rdd >= 18)
+
 # Remove records where Ready for Discharge date is same as Discharge Date
 scotland %<>%
   filter(readyfordischargedate != date_discharge | is.na(date_discharge))
 
+# Remove records where Ready for Discharge date is last day of month
+scotland %<>%
+  filter(readyfordischargedate != end_month)
+  
 
 ### 3 - Recoding ----
 
