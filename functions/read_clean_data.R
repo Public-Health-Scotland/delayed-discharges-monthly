@@ -54,7 +54,8 @@ read_clean_data <- function(filepath){
     mutate_if(is.character, ~ str_trim(., side = "both")) %>%
     
     # Format dates
-    mutate_at(vars(contains("date")), dmy) %>%
+    mutate(across(contains("date"), dmy),
+           across(contains("dob"), dmy)) %>%
     
     # Pad CHI Number
     mutate(chi_no = chi_pad(chi_no)) %>%
