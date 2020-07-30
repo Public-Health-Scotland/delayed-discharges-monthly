@@ -13,7 +13,7 @@
 #########################################################################
 
 
-### 1 - Load setup environment and functions ----
+### 0 - Load setup environment and functions ----
 
 source(here::here("code", "00_setup_environment.R"))
 
@@ -49,7 +49,6 @@ scotland %<>%
 scotland %<>%
   replace_na(list(monthflag = format(start_month, "%b-%y")))
 
-
 # Recode Local Authority codes to names
 scotland %<>%
   mutate(local_authority_area = 
@@ -66,6 +65,41 @@ scotland %<>%
            case_when(!is.na(la_desc) ~ la_desc,
                      TRUE ~ local_authority_area)) %>%
   select(-la_desc)
+
+# Recode out of area flag
+scotland %<>%
+  mutate(outofareacaseindicator = 
+           case_when(
+             str_detect(outofareacaseindicator, "^(Y|y)") ~ 1,
+             str_detect(outofareacaseindicator, "^(N|n)") ~ 0,
+             is.na(outofareacaseindicator) ~ 0
+           ))
+
+# Recode gender
+scotland %<>%
+  mutate(gender = 
+           case_when(
+             str_detect(gender, "(1|M)") ~ "Male",
+             str_detect(gender, "(2|F)") ~ "Female"
+           ))
+
+# Recode reason for delay
+scotland %<>%
+  
+  # Ensure all codes upper case
+  mutate(across(contains("reasonfordelay"), toupper)) %>%
+  
+  # Remove leading zero from code 9
+  mutate(reasonfordelay = 
+           if_else(reasonfordelay == "09", "9", reasonfordelay)
+  ) %>%
+  
+  # Code missing reason for delay as 11A
+  mutate(reasonfordelay = 
+           if_else(is.na(reasonfordelay) & is.na(reasonfordelaysecondary),
+                   "11A", 
+                   reasonfordelay)
+  ) 
 
 
 ### END OF SCRIPT ###

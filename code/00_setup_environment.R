@@ -34,7 +34,7 @@ library(usethis)      # For creating new folders
 
 ### 2 - Define month start date and derive end date ----
 
-start_month <- dmy(01062020)
+start_month <- dmy(01042020)
 
 end_month <- ceiling_date(start_month, "month") - days(1)
 
