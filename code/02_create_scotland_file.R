@@ -43,4 +43,29 @@ scotland %<>%
   filter(readyfordischargedate != date_discharge | is.na(date_discharge))
 
 
+### 3 - Recoding ----
+
+# Add monthflag if missing
+scotland %<>%
+  replace_na(list(monthflag = format(start_month, "%b-%y")))
+
+
+# Recode Local Authority codes to names
+scotland %<>%
+  mutate(local_authority_area = 
+           case_when(
+             nchar(local_authority_area) == 1 ~ paste0("0", local_authority_area),
+             local_authority_area == "Aberdeen City" ~ "Aberdeen",
+             TRUE ~ local_authority_area
+           )) %>%
+  left_join(
+    read_rds(here("lookups", "local-authority.rds")), 
+    by = c("local_authority_area" = "la_code")
+  ) %>%
+  mutate(local_authority_area = 
+           case_when(!is.na(la_desc) ~ la_desc,
+                     TRUE ~ local_authority_area)) %>%
+  select(-la_desc)
+
+
 ### END OF SCRIPT ###
