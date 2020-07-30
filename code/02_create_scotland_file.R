@@ -29,11 +29,11 @@ source(here("functions", "read_clean_data.R"))
 # Ignore warning message: Missing column names filled in: 'X18'...
 
 scotland <-
-  paste0(here("data", format(start_month, "%Y-%m"), "submitted", boards, boards), 
+  paste0(here("data", format(start_month, "%Y-%m"), 
+              "submitted", boards, boards), 
          ".csv") %>%
-  map(possibly(read_clean_data, otherwise = tibble(NA), quiet = FALSE)) %>%
-  reduce(bind_rows) %>%
-  remove_empty(c("rows", "cols"))
+  map(possibly(read_clean_data, otherwise = NULL, quiet = FALSE)) %>%
+  reduce(bind_rows)
 
 
 ### END OF SCRIPT ###
