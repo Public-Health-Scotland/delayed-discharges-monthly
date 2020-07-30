@@ -31,6 +31,7 @@ ISD-NATIONAL-STATS-SUMMARY.docx
 *.[rR][dD][aA][tT][aA]
 *.[rR][dD][sS]
 
-# Allow lookups folder 
+# Allow lookup files
 !lookups/acute-hospitals.rds
 !lookups/local-authority.rds
+!lookups/reason-for-delay.rds
