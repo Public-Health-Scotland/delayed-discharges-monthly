@@ -17,7 +17,7 @@
 
 source(here::here("code", "00_setup_environment.R"))
 
-source(here("functions", "read_clean_data.R"))
+walk(list.files(here("functions"), full.names = TRUE), source)
 
 
 ### 1 - Read in csv file for each board and add together ----
@@ -34,6 +34,13 @@ scotland <-
          ".csv") %>%
   map(possibly(read_clean_data, otherwise = NULL, quiet = FALSE)) %>%
   reduce(bind_rows)
+
+
+### 2 - Exclusions ----
+
+# Remove records where Ready for Discharge date is same as Discharge Date
+scotland %<>%
+  filter(readyfordischargedate != date_discharge | is.na(date_discharge))
 
 
 ### END OF SCRIPT ###
