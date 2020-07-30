@@ -22,17 +22,23 @@ read_clean_data <- function(filepath){
     # Rename old naming convention to new
     rename_all(~ str_replace(., "NHS Board", "Healthboard")) %>%
     rename_all(~ str_replace(., "Monthflag", "MONTHFLAG")) %>%
-    rename_all(~ str_replace(., "Discharge Hospital Nat Code", "HealthLocationCode")) %>%
+    rename_all(~ str_replace(., "Discharge Hospital Nat Code", 
+                                "HealthLocationCode")) %>%
     rename_all(~ str_replace(., "CHI Number", "CHINo")) %>%
     rename_all(~ str_replace(., "^Postcode$", "PatientPostcode")) %>%
-    rename_all(~ str_replace(., "Local Authority Code", "LocalAuthorityArea")) %>%
+    rename_all(~ str_replace(., "Local Authority Code", 
+                                "LocalAuthorityArea")) %>%
     rename_all(~ str_replace(., "Date of Birth", "PatientDOB")) %>%
-    rename_all(~ str_replace(., "Discharge Specialty Nat Code", "SpecialtyCode")) %>%
-    rename_all(~ str_replace(., "Date Referred for SW Assessment", "DateReferralReceived")) %>%
-    rename_all(~ str_replace(., "Date Declared Medically Fit", "Readyfordischargedate")) %>%
+    rename_all(~ str_replace(., "Discharge Specialty Nat Code", 
+                                "SpecialtyCode")) %>%
+    rename_all(~ str_replace(., "Date Referred for SW Assessment", 
+                                "DateReferralReceived")) %>%
+    rename_all(~ str_replace(., "Date Declared Medically Fit", 
+                                "Readyfordischargedate")) %>%
     rename_all(~ str_replace(., "DD_Code_1", "REASONFORDELAY")) %>%
     rename_all(~ str_replace(., "DD_Code_2", "REASONFORDELAYSECONDARY")) %>%
-    rename_all(~ str_replace(., "Out of Area Case Indicator", "Outofareacaseindicator")) %>%
+    rename_all(~ str_replace(., "Out of Area Case Indicator", 
+                                "Outofareacaseindicator")) %>%
     rename_all(~ str_replace(., "Admission Date", "OriginalAdmissionDate")) %>%
     rename_all(~ str_replace(., "Sex Code", "Gender")) %>%
     rename_all(~ str_replace(., "Delay End Date", "DateDischarge")) %>%
