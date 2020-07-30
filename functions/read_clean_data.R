@@ -57,6 +57,9 @@ read_clean_data <- function(filepath){
     mutate_at(vars(contains("date")), dmy) %>%
     
     # Pad CHI Number
-    mutate(chi_no = chi_pad(chi_no))
+    mutate(chi_no = chi_pad(chi_no)) %>%
+    
+    # Format postcode
+    mutate(patient_postcode = phsmethods::postcode(patient_postcode))
   
 }
