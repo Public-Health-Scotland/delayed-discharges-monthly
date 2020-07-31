@@ -263,4 +263,14 @@ scotland %<>%
   relocate(hscp, locality, .after = datazone)
 
 
+### 6 - Save file ----
+
+write_rds(
+  scotland,
+  here("data", format(start_month, "%Y-%m"),
+       paste0(format(start_month, "%Y-%m"), "_scotland.rds")),
+  compress = "gz"
+)
+
+
 ### END OF SCRIPT ###
