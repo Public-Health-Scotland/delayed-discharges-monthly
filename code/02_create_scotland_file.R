@@ -229,7 +229,9 @@ scotland %<>%
 # Add hospital type
 scotland %<>%
   left_join(
-    read_rds(here("lookups", "acute-hospitals.rds")) %>% mutate(acute = 1),
+    read_rds(here("lookups", "acute-hospitals.rds")) %>% 
+      select(-hospname) %>%
+      mutate(acute = 1),
     by = c("health_location_code" = "hosp")
   ) %>%
   replace_na(list(acute = 0)) %>%
@@ -251,34 +253,13 @@ scotland %<>%
 
 # Add weekdays
 scotland %<>%
-  mutate(
-    rdd_day = weekdays(readyfordischargedate),
-    disch_day = weekdays(date_discharge)
-  )
+  mutate(rdd_day = weekdays(readyfordischargedate), 
+         .after = readyfordischargedate) %>%
+  mutate(disch_day = weekdays(date_discharge),
+         .after = date_discharge)
 
 
-### 5 - Add info from lookups ----
-
-scotland %<>%
-  
-  # Specialty description
-  left_join(specialty(), by = "specialty_code") %>%
-  relocate(specialty_desc, .after = specialty_code) %>%
-
-  # Location name
-  left_join(location(), by = c("health_location_code" = "location")) %>%
-  relocate(locname, .after = health_location_code) %>%
-  
-  # Datazone
-  left_join(postcode(), by = c("patient_postcode" = "pc7")) %>%
-  relocate(datazone, .after = patient_postcode) %>%
-  
-  # HSCP and Locality
-  left_join(hscp_locality(), by = "datazone") %>%
-  relocate(hscp, locality, .after = datazone)
-
-
-### 6 - Save file ----
+### 5 - Save file ----
 
 write_rds(
   scotland,
