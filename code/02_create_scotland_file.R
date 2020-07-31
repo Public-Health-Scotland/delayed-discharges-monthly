@@ -134,9 +134,9 @@ scotland %<>%
     read_rds(here("lookups", "reason-for-delay.rds")),
     by = c("reason_match" = "code")
   ) %>%
-  rename(reasongrp_highlevel = group1,
-         reasongrp           = group2,
-         delay_description   = description) %>%
+  rename(reas1 = group1,
+         reas2 = group2,
+         delay_description = description) %>%
   select(-reason_match)
 
 # Add census flag
@@ -189,26 +189,34 @@ scotland %<>%
   ))
 
 # Add delay length grouping
-scotland %<>%
+test <- scotland %>%
   mutate(delay_length_group = case_when(
-    delay_at_census %in% 1:3           ~ "1-3 days",
-    delay_at_census %in% 4:14          ~ "4-14 days",
-    delay_at_census %in% 15:28         ~ "2-4 weeks",
-    delay_at_census %in% 29:42         ~ "4-6 weeks",
-    delay_at_census %in% 43:84         ~ "6-12 weeks",
-    delay_at_census %in% 85:182    ~ "3-6 months",
+    delay_at_census %in% 1:3     ~ "1-3 days",
+    delay_at_census %in% 4:14    ~ "4-14 days",
+    delay_at_census %in% 15:28   ~ "2-4 weeks",
+    delay_at_census %in% 29:42   ~ "4-6 weeks",
+    delay_at_census %in% 43:84   ~ "6-12 weeks",
+    delay_at_census %in% 85:182  ~ "3-6 months",
     delay_at_census %in% 183:365 ~ "6-12 months",
-    delay_at_census > 365            ~ "12+ months",
-    census_flag == 0                   ~ NA_character_
+    delay_at_census > 365        ~ "12+ months",
+    census_flag == 0             ~ NA_character_
   ),
-  delay_names = delay_length_group,
+  delay_names = case_when(
+    !is.na(delay_length_group) ~
+      paste0("delay", 
+             delay_length_group %>%
+               str_remove_all(" ") %>%
+               str_replace("-", "to") %>%
+               str_replace("12\\+", "_over12")),
+    TRUE ~ NA_character_
+  ),
   delay_value = 1) %>%
   pivot_wider(names_from  = delay_names,
               values_from = delay_value,
               values_fill = list(delay_value = 0)) %>%
   select(-`NA`) %>%
-  relocate(c("1-3 days", "4-14 days", "2-4 weeks", "4-6 weeks",
-             "6-12 weeks", "3-6 months", "6-12 months", "12+ months"),
+  relocate(c("delay1to3days", "delay4to14days", "delay2to4weeks", "delay4to6weeks",
+             "delay6to12weeks", "delay3to6months", "delay6to12months", "delay_over12months"),
            .after = delay_length_group)
 
 # Add hospital type
