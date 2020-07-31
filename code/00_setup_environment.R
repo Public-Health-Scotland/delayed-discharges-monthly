@@ -34,7 +34,7 @@ library(usethis)      # For creating new folders
 
 ### 2 - Define month start date and derive end date ----
 
-start_month <- dmy(01042020)
+start_month <- dmy(01062020)
 
 end_month <- ceiling_date(start_month, "month") - days(1)
 
@@ -81,14 +81,14 @@ specialty <- function(){
   glue("{cl_out}/lookups/Unicode/National Reference Files/specialt.rds") %>%
     read_rds() %>%
     clean_names() %>%
-    select(spec_code = speccode, spec_desc = description)
+    select(specialty_code = speccode, specialty_desc = description)
 }
   
 location <- function(){
   glue("{cl_out}/lookups/Unicode/National Reference Files/location.rds") %>%
     read_rds() %>%
     clean_names() %>%
-    select(location, location_name = locname)
+    select(location, locname)
 }
   
 hscp_locality <- function(){

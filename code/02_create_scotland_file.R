@@ -230,5 +230,37 @@ scotland %<>%
     TRUE ~ 0
   ))
 
+# Add patient count
+scotland %<>%
+  mutate(no_of_patients = 1)
+
+# Add weekdays
+scotland %<>%
+  mutate(
+    rdd_day = weekdays(readyfordischargedate),
+    disch_day = weekdays(date_discharge)
+  )
+
+
+### 5 - Add info from lookups ----
+
+scotland %<>%
+  
+  # Specialty description
+  left_join(specialty(), by = "specialty_code") %>%
+  relocate(specialty_desc, .after = specialty_code) %>%
+
+  # Location name
+  left_join(location(), by = c("health_location_code" = "location")) %>%
+  relocate(locname, .after = health_location_code) %>%
+  
+  # Datazone
+  left_join(postcode(), by = c("patient_postcode" = "pc7")) %>%
+  relocate(datazone, .after = patient_postcode) %>%
+  
+  # HSCP and Locality
+  left_join(hscp_locality(), by = "datazone") %>%
+  relocate(hscp, locality, .after = datazone)
+
 
 ### END OF SCRIPT ###
