@@ -189,10 +189,10 @@ scotland %<>%
   ))
 
 # Add delay length grouping
-test <- scotland %>%
+scotland %<>%
   mutate(delay_length_group = case_when(
     delay_at_census %in% 1:3     ~ "1-3 days",
-    delay_at_census %in% 4:14    ~ "4-14 days",
+    delay_at_census %in% 4:14    ~ "3-14 days",
     delay_at_census %in% 15:28   ~ "2-4 weeks",
     delay_at_census %in% 29:42   ~ "4-6 weeks",
     delay_at_census %in% 43:84   ~ "6-12 weeks",
@@ -215,9 +215,16 @@ test <- scotland %>%
               values_from = delay_value,
               values_fill = list(delay_value = 0)) %>%
   select(-`NA`) %>%
-  relocate(c("delay1to3days", "delay4to14days", "delay2to4weeks", "delay4to6weeks",
+  relocate(c("delay1to3days", "delay3to14days", "delay2to4weeks", "delay4to6weeks",
              "delay6to12weeks", "delay3to6months", "delay6to12months", "delay_over12months"),
-           .after = delay_length_group)
+           .after = delay_length_group) %>%
+  mutate(
+    delay_over3days = (delay_at_census > 3) * 1,
+    delay_under2wks = (delay_at_census <= 14) * 1,
+    delay_over2wks  = (delay_at_census > 14) * 1,
+    delay_over4wks  = (delay_at_census > 28) * 1,
+    delay_over6wks  = (delay_at_census > 42) * 1
+  )
 
 # Add hospital type
 scotland %<>%
