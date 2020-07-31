@@ -114,4 +114,32 @@ scotland %<>%
   ) 
 
 
+### 4 - Derivations ----
+
+# Add age groups
+scotland %<>%
+  mutate(age_grouping = case_when(
+    age_at_rdd %in% 18:74 ~ "18-74",
+    age_at_rdd >=   75    ~ "75+"
+  ))
+
+# Add Reason for Delay groupings
+scotland %<>%
+  
+  # Match on reason for delay lookup
+  mutate(reason_match =
+           case_when(
+             reasonfordelay == 9 ~ reasonfordelaysecondary,
+             TRUE ~ reasonfordelay
+           )) %>%
+  left_join(
+    read_rds(here("lookups", "reason-for-delay.rds")),
+    by = c("reason_match" = "code")
+  ) %>%
+  rename(reasongrp_highlevel = group1,
+         reasongrp           = group2,
+         delay_description   = description) %>%
+  select(-reason_match)
+  
+
 ### END OF SCRIPT ###
