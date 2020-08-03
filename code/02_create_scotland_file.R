@@ -144,13 +144,10 @@ scotland %<>%
   mutate(
     census_date = census_date(start_month),
     census_flag = case_when(
+      reasonfordelaysecondary %in% c("26X", "46X") ~ 0,
       readyfordischargedate < census_date & is.na(date_discharge) ~ 1,
       readyfordischargedate < census_date & date_discharge >= census_date ~ 1,
       TRUE ~ 0
-    ),
-    census_flag = case_when(
-      reasonfordelaysecondary %in% c("26X", "46X") ~ 0,
-      TRUE ~ census_flag
     )
   )
 
