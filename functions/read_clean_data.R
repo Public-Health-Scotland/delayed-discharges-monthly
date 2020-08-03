@@ -61,6 +61,6 @@ read_clean_data <- function(filepath){
     mutate(chi_no = chi_pad(chi_no)) %>%
     
     # Format postcode
-    mutate(patient_postcode = phsmethods::postcode(patient_postcode))
+    mutate(patient_postcode = postcode(patient_postcode))
   
 }

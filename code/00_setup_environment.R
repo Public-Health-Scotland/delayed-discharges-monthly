@@ -69,7 +69,7 @@ cl_out <- case_when(
 
 ### 5 - Define lookup files ----
 
-postcode <- function(){
+pc_lookup <- function(){
   glue("{cl_out}/lookups/Unicode/Geography/Scottish Postcode Directory/",
        "Scottish_Postcode_Directory_2020_1.rds") %>%
     read_rds() %>%
@@ -77,21 +77,21 @@ postcode <- function(){
     select(pc7, datazone = datazone2011)
 }
   
-specialty <- function(){
+spec_lookup <- function(){
   glue("{cl_out}/lookups/Unicode/National Reference Files/specialt.rds") %>%
     read_rds() %>%
     clean_names() %>%
     select(specialty_code = speccode, specialty_desc = description)
 }
   
-location <- function(){
+location_lookup <- function(){
   glue("{cl_out}/lookups/Unicode/National Reference Files/location.rds") %>%
     read_rds() %>%
     clean_names() %>%
     select(location, locname)
 }
   
-hscp_locality <- function(){
+hscp_locality_lookup <- function(){
   glue("{cl_out}/lookups/Unicode/Geography/HSCP Locality/",
        "HSCP Localities_DZ11_Lookup_20191216.rds") %>%
     read_rds() %>%
