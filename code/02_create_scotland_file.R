@@ -160,22 +160,16 @@ scotland %<>%
 
 # Calculate number of bed days in month
 scotland %<>%
-  
   mutate(
-    rdd_in_month = between(readyfordischargedate, start_month, end_month),
-    disch_in_month = between(date_discharge, start_month, end_month),
-    
-    obds = case_when(
-      rdd_in_month & disch_in_month ~ 
-        time_length(interval(readyfordischargedate, date_discharge), "days"),
-      !rdd_in_month & disch_in_month ~ 
-        time_length(interval(start_month, date_discharge), "days") + 1,
-      rdd_in_month & (!disch_in_month | is.na(date_discharge)) ~
-        time_length(interval(readyfordischargedate, end_month), "days"),
-      !rdd_in_month & (!disch_in_month | is.na(date_discharge)) ~
-        time_length(interval(start_month, end_month), "days") + 1
-    )) %>%
-  select(-rdd_in_month, -disch_in_month)
+    start_date = if_else(readyfordischargedate < start_month, 
+                         start_month - days(1),
+                         readyfordischargedate),
+    end_date   = if_else(date_discharge > end_month | is.na(date_discharge),
+                         end_month, 
+                         date_discharge),
+    obds = time_length(interval(start_date, end_date), "days")
+  ) %>%
+  select(-start_date, -end_date)
 
 # Calulcate length of delay at census
 scotland %<>%
