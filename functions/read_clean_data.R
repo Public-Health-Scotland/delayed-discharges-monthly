@@ -47,11 +47,16 @@ read_clean_data <- function(filepath){
     
     clean_names() %>%
     
-    # Code all blanks as NA
-    mutate_all(na_if, "") %>%
-    
     # Trim white space from all character variables
     mutate_if(is.character, ~ str_trim(., side = "both")) %>%
+    
+    # Remove leading zero from coded variables
+    mutate(across(c(local_authority_area, reasonfordelay,
+                    reasonfordelaysecondary, gender, discharge_reason),
+                  ~ str_remove_all(., "^0*"))) %>%
+    
+    # Code all blanks as NA
+    mutate_all(na_if, "") %>%
     
     # Format dates
     mutate(across(contains("date"), dmy),
