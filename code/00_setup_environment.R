@@ -78,15 +78,15 @@ pc_lookup <- function(){
 }
   
 spec_lookup <- function(){
-  glue("{cl_out}/lookups/Unicode/National Reference Files/specialt.rds") %>%
-    read_rds() %>%
+  glue("{cl_out}/lookups/Unicode/National Reference Files/specialt.sav") %>%
+    read_sav() %>%
     clean_names() %>%
     select(specialty_code = speccode, specialty_desc = description)
 }
   
 location_lookup <- function(){
-  glue("{cl_out}/lookups/Unicode/National Reference Files/location.rds") %>%
-    read_rds() %>%
+  glue("{cl_out}/lookups/Unicode/National Reference Files/location.sav") %>%
+    read_sav() %>%
     clean_names() %>%
     select(location, locname)
 }
