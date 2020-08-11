@@ -63,17 +63,15 @@ scotland %<>%
 
 # Recode Local Authority codes to names
 scotland %<>%
-  mutate(local_authority_area = case_when(
-    local_authority_area == "Aberdeen City" ~ "Aberdeen",
-    TRUE ~ local_authority_area
-  )) %>%
   left_join(
     read_rds(here("lookups", "local-authority.rds")), 
     by = c("local_authority_area" = "la_code")
   ) %>%
-  mutate(local_authority_area = 
-           case_when(!is.na(la_desc) ~ la_desc,
-                     TRUE ~ local_authority_area)) %>%
+  mutate(local_authority_area = case_when(
+    !is.na(la_desc) ~ la_desc,
+    local_authority_area == "Aberdeen City" ~ "Aberdeen",
+    TRUE ~ local_authority_area
+  )) %>%
   select(-la_desc)
 
 # Recode out of area flag
