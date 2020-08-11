@@ -93,16 +93,11 @@ scotland %<>%
 
 # Recode reason for delay
 scotland %<>%
-  
-  # Ensure all codes upper case
-  mutate(across(contains("reasonfordelay"), toupper)) %>%
-  
   # Code missing reason for delay as 11A
   mutate(reasonfordelay = 
            if_else(is.na(reasonfordelay) & is.na(reasonfordelaysecondary),
                    "11A", 
-                   reasonfordelay)
-  ) 
+                   reasonfordelay)) 
 
 
 ### 4 - Derivations ----

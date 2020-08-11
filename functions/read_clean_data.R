@@ -58,6 +58,9 @@ read_clean_data <- function(filepath){
     # Code all blanks as NA
     mutate_all(na_if, "") %>%
     
+    # Ensure all reason for delay codes upper case
+    mutate(across(contains("reasonfordelay"), toupper)) %>%
+    
     # Format dates
     mutate(across(contains("date"), dmy),
            across(contains("dob"), dmy)) %>%
