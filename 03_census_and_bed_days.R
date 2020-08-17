@@ -89,7 +89,7 @@ datafile<-datafile%>% mutate(age_grp=
 
 #save out file for main bed days file
 
-
+ 
 #write_sav(datafile,paste0(filepath,"main bed days file.sav")) # save out file
 
 #set function
