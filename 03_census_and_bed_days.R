@@ -12,7 +12,7 @@
 # Description of content: Updates trendfile with DD records from most recent publication monthflag.
 # Approximate run time: TBC
 ##########################################################
-
+ 
 
 ### 1.Housekeeping ----
 # This section should be the only section of the script which requires manual changes 
