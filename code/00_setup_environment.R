@@ -108,6 +108,7 @@ hb_lookup <- function(){
     read_csv() %>%
     clean_names() %>%
     filter(is.na(hb_date_archived)) %>%
+    mutate(hb_name = str_replace(hb_name, " and ", " & ")) %>%
     select(healthboard_code = hb, 
            healthboard = hb_name)
 }
