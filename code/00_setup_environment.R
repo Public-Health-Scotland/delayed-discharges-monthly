@@ -101,5 +101,35 @@ hscp_locality_lookup <- function(){
            locality = hscp_locality)
 }
 
+hb_lookup <- function(){
+  paste0("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-",
+         "d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/",
+         "download/hb14_hb19.csv") %>%
+    read_csv() %>%
+    clean_names() %>%
+    filter(is.na(hb_date_archived)) %>%
+    select(healthboard_code = hb, 
+           healthboard = hb_name)
+}
+
+la_lookup <- function(){
+  paste0("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-",
+           "d6e17229cc7b/resource/967937c4-8d67-4f39-974f-fd58c4acfda5/",
+           "download/ca11_ca19.csv") %>%
+    read_csv() %>%
+    clean_names() %>%
+    filter(is.na(ca_date_archived)) %>%
+    mutate(ca_name = case_when(
+      ca_name == "Na h-Eileanan Siar" ~ "Comhairle nan Eilean Siar",
+      ca_name == "Aberdeen City" ~ "Aberdeen",
+      str_detect(ca_name, " Islands") ~ str_remove(ca_name, " Islands"),
+      str_detect(ca_name, " and ") ~ str_replace(ca_name, " and ", " & "),
+      TRUE ~ ca_name
+    )) %>%
+    select(local_authority_area_code = ca, 
+           local_authority_area = ca_name) %>%
+    distinct()
+}
+
 
 ### END OF SCRIPT ###
