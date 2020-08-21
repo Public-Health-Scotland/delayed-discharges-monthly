@@ -235,6 +235,15 @@ scotland %<>%
   mutate(disch_day = weekdays(date_discharge),
          .after = date_discharge)
 
+# Add date information
+scotland %<>%
+  mutate(
+    fin_yr = fin_year(start_month),
+    cal_yr = year(start_month),
+    cennum = census_number(start_month),
+    .before = everything()
+  )
+
 
 ### 5 - Save file ----
 
