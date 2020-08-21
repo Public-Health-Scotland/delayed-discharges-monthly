@@ -57,9 +57,9 @@ scotland %<>%
 
 ### 3 - Recoding ----
 
-# Add monthflag if missing
+# Add month flag
 scotland %<>%
-  replace_na(list(monthflag = format(start_month, "%b-%y")))
+  mutate(monthflag = format(start_month, "%b %Y"))
 
 # Recode Local Authority codes to names
 scotland %<>%
