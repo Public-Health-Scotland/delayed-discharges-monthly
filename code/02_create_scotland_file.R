@@ -69,7 +69,6 @@ scotland %<>%
   ) %>%
   mutate(local_authority_area = case_when(
     !is.na(la_desc) ~ la_desc,
-    local_authority_area == "Aberdeen City" ~ "Aberdeen",
     TRUE ~ local_authority_area
   )) %>%
   select(-la_desc)

@@ -122,7 +122,6 @@ la_lookup <- function(){
     filter(is.na(ca_date_archived)) %>%
     mutate(ca_name = case_when(
       ca_name == "Na h-Eileanan Siar" ~ "Comhairle nan Eilean Siar",
-      ca_name == "Aberdeen City" ~ "Aberdeen",
       str_detect(ca_name, " Islands") ~ str_remove(ca_name, " Islands"),
       str_detect(ca_name, " and ") ~ str_replace(ca_name, " and ", " & "),
       TRUE ~ ca_name
