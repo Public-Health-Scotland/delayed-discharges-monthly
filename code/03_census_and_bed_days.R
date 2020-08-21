@@ -93,12 +93,12 @@ datafile<-datafile%>% mutate(age_grp=
 #write_sav(datafile,paste0(filepath,"main bed days file.sav")) # save out file
 
 #set function
-'%!in%' <- function(x,y)!('%in%'(x,y))
+#'%!in%' <- function(x,y)!('%in%'(x,y))
 
 #Save census data file
 
 
-datafile2 <- filter(datafile, REASONFORDELAYSECONDARY %!in%c("26X","46X") & CENSUSFLAG=="Y")
+datafile2 <- filter(datafile, !REASONFORDELAYSECONDARY %in%c("26X","46X") & CENSUSFLAG=="Y")
 
 
 #write_sav(datafile2,paste0(filepath,"main census file.sav")) # save out file
