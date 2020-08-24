@@ -17,7 +17,10 @@ pub_date <- function(start_month){
   
   rule <- 
     almanac::monthly() %>%
-      almanac::recur_on_wday("Tuesday", nth = 1)
+    almanac::recur_on_wday(
+      "Tuesday", 
+      nth = dplyr::if_else(month(start_month) == 11, 2, 1)
+    )
   
   almanac::alma_search(start_pub_month, end_pub_month, rule)
   
