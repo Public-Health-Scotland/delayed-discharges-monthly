@@ -71,7 +71,7 @@ cl_out <- case_when(
 
 pc_lookup <- function(){
   glue("{cl_out}/lookups/Unicode/Geography/Scottish Postcode Directory/",
-       "Scottish_Postcode_Directory_2020_1.rds") %>%
+       "Scottish_Postcode_Directory_2020_2.rds") %>%
     read_rds() %>%
     clean_names() %>%
     select(pc7, datazone = datazone2011)
