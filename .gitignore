@@ -4,8 +4,9 @@
 .Ruserdata
 odbc_connect.R
 
-# 'data' folder #
+# data folders #
 data/
+trend/
 
 # Markdown output
 ISD-NATIONAL-STATS-REPORT.docx
@@ -29,3 +30,8 @@ ISD-NATIONAL-STATS-SUMMARY.docx
 # R data files #
 *.[rR][dD][aA][tT][aA]
 *.[rR][dD][sS]
+
+# Allow lookup files
+!lookups/acute-hospitals.rds
+!lookups/local-authority.rds
+!lookups/reason-for-delay.rds
