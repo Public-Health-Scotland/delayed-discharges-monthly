@@ -13,4 +13,13 @@
 #########################################################################
 
 
+### 0 - Load setup_environment and functions ----
+
+source(here::here("code", "00_setup_environment.R"))
+
+walk(list.files(here("functions"), full.names = TRUE), source)
+
+
 ### 1 - Import latest Scotland file ----
+
+datafile <- read_rds(here("data", format(start_month, "%Y-%m"), paste0(format(start_month, "%Y-%m"), "_scotland.rds")))
