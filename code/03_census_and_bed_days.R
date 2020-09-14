@@ -1,4 +1,4 @@
-##########################################################
+
 # Name of file: 04_Census_and_Bed_Days.R
 # Data Release: Monthly Delayed Discharges publication
 # Original author(s): Peter McClurg
@@ -8,7 +8,7 @@
 # Version of R that the script was most recently run on: 3.6.1
 # Description of content: Updates trendfile with DD records from most recent publication monthflag.
 # Approximate run time: TBC
-##########################################################
+
 
 ### 1 - Load setup environment and functions ----
 
@@ -22,7 +22,7 @@ walk(list.files(here("functions"), full.names = TRUE), source)
 
 
 
-### 1 - Import Scotland_validated file ----
+### 1a - Import Scotland_validated file ----
 
 datafile <- readRDS(scotland, here("data", format(start_month, "%Y-%m"), paste0(format(start_month, "%Y-%m"), "_scotland.rds")))
 
@@ -46,7 +46,7 @@ datafile2 <- filter(datafile, !REASONFORDELAYSECONDARY %in%c("26X","46X") & CENS
 
 
 
-# 5. Create Reason 2 Groupings ----
+# 1b. Create Reason 2 Groupings ----
 
 ##Sub grouping reason_grp for code 9s are currently being classed as H&SC or Pat/Fam reasons. Ensure they are just code 9s.
 ##Also bring in Transport as a separate category.
@@ -110,7 +110,7 @@ HBbysubreasongrouping <- datafile %>%
 
 
 
-### 3. Breakdown for LA (Level=3) ----
+### 4 - Breakdown for LA (Level=3) ----
 datafile %<>% mutate(level = "3", areaname = "Localauthorityarea")
 
 
@@ -424,7 +424,7 @@ laallvariations<-laallvariations %>% mutate(OBDs=
                                               if_else(is.na(OBDs),0L,OBDs) %>% 
 arrange(laallvariations,laallvariations$LocalAuthorityArea,laallvariations$age_grp,laallvariations$reas1))
 
-### 19. Save out LA file ----
+### 15. Save out LA file ----
 
 write.xlsx(laallvariations, here::here("outputs", "LA bed days data sheet_R.xlsx"))
 
