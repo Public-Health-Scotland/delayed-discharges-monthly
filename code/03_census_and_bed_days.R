@@ -20,12 +20,12 @@ source(here::here("code", "00_setup_environment.R"))
   
 walk(list.files(here("functions"), full.names = TRUE), source)
 
-
+ 
 
 ### 1a - Import Scotland_validated file ----
 
-datafile <- readRDS(scotland, here("data", format(start_month, "%Y-%m"), paste0(format(start_month, "%Y-%m"), "_scotland.rds")))
-
+#datafile <- readRDS(scotland, here("data", format(start_month, "%Y-%m"), paste0(format(start_month, "%Y-%m"), "_scotland.rds")))
+datafile<-readRDS(paste0('/conf/delayed_discharges/RAP development/2020_06/data/scotland/2020-06_scotland.rds'))
 
 # Filter to remove 'Code 100'
   
@@ -40,10 +40,8 @@ datafile<-datafile %>% mutate(areaname=" ")
 #Save census data file
 
 
-datafile2 <- filter(datafile, !REASONFORDELAYSECONDARY %in%c("26X","46X") & CENSUSFLAG=="Y")
-
-
-
+#datafile2 <- filter(datafile, !reasonfordelaysecondary %in%c("26X","46X") & census_flag=="Y")
+datafile2 <- filter(datafile, !reasonfordelaysecondary %in%c("26X","46X") & census_flag==1)
 
 
 # 1b. Create Reason 2 Groupings ----
@@ -54,36 +52,36 @@ datafile2 <- filter(datafile, !REASONFORDELAYSECONDARY %in%c("26X","46X") & CENS
 datafile3<-datafile2 %>% 
   mutate(reas2 = as.character(reas2))%>% 
   mutate(reas2=
-           if_else(DELAY_DESCRIPTION=="Adults with Incapacity Act", "Adults with Incapacity Act",reas2))
+           if_else(delay_description=="Adults with Incapacity Act", "Adults with Incapacity Act",reas2))
 
 datafile3<-datafile2 %>% 
   mutate(reas2 = as.character(reas2))%>% 
   mutate(reas2=
-           if_else(DELAY_DESCRIPTION!="Adults with Incapacity Act" & reas1=="Code 9", "Other code 9 reasons(not AWI)",reas2))
+           if_else(delay_description!="Adults with Incapacity Act" & reas1=="Code 9", "Other code 9 reasons(not AWI)",reas2))
 
 datafile3<-datafile2 %>% 
   mutate(reas2 = as.character(reas2))%>% 
   mutate(reas2=
-           if_else(DELAY_DESCRIPTION=="Awaiting availability of transport","Transport",reas2))
+           if_else(delay_description=="Awaiting availability of transport","Transport",reas2))
 
 
 
 
 ### 2 - Get reason / age_grp breakdown for Scotland (Level = 2) ----
 
-datafile %<>% mutate(level = "1", areaname = "Scotland")
+datafile2 %<>% mutate(level = "1", areaname = "Scotland")
 
-Scotlandbymainreasongrouping <- datafile %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas1) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+Scotlandbymainreasongrouping <- datafile2 %>%
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
   ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
 
 
-Scotlandbysubreasongrouping <- datafile %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas2) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+Scotlandbysubreasongrouping <- datafile2 %>%
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas2) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
@@ -91,40 +89,39 @@ Scotlandbysubreasongrouping <- datafile %>%
 
 
 ### 3 - Breakdown for HBs (Level = 2) ----
-datafile %<>% mutate(level = "2", areaname = "Healthboard")
+datafile2 %<>% mutate(level = "2", areaname = healthboard)
 
-HBbymainreasongrouping <- datafile %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas1) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+HBbymainreasongrouping <- datafile2 %>%
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
 
 
 
-HBbysubreasongrouping <- datafile %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas2) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+HBbysubreasongrouping <- datafile2 %>%
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas2) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
 
 
 ### 4 - Breakdown for LA (Level=3) ----
-datafile %<>% mutate(level = "3", areaname = "Localauthorityarea")
+datafile2 %<>% mutate(level = "3", areaname = local_authority_area)
 
 
 labymainreasongrouping <- datafile %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas1) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
 
-
 labysubreasongrouping <- datafile %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas2) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas2) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
@@ -136,17 +133,15 @@ Scot_HB_la <- bind_rows(Scotlandbymainreasongrouping, Scotlandbysubreasongroupin
 
 
 Scot_HB_la %>% 
-  
-  +    mutate(reas1 = as.character(reas1)) %>% 
-  
-  +    mutate(reas1 = if_else(is.na(reas1), reas2, reas1))
+  mutate(reas1 = as.character(reas1)) %>% 
+  mutate(reas1 = if_else(is.na(reas1), reas2, reas1))
 
 
 Scot_HB_la %<>% mutate(age_grp = "All")
 
 ScotHBlaallage_grps<- Scot_HB_la %>%
-group_by(year, MONTHFLAG, level, areaname, age_grp, reas1) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
@@ -162,8 +157,8 @@ Scot_HB_la %<>%
 
 
 ScotHBlaallreasonsincHSCPatFamtotal<- Scot_HB_la %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas1) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
