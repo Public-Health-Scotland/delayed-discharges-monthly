@@ -29,6 +29,7 @@ library(phsmethods)   # For internal PHS functions
 library(magrittr)     # For the %<>%
 library(glue)         # For working with strings
 library(almanac)      # For working with recurring dates
+library(usethis)      # For creating new folders
 
 
 ### 2 - Define month start date and derive end date ----
@@ -38,7 +39,21 @@ start_month <- dmy(01062020)
 end_month <- ceiling_date(start_month, "month") - days(1)
 
 
-### 3 - Define filepaths dependent on whether running on server or desktop ----
+### 3 - Create data folders ----
+
+boards <- c("a&a", "borders", "d&g", "fife", "fv", 
+            "glasgow", "grampian", "highland", "lanark", 
+            "lothian", "orkney", "shetland", "tayside", "wi")
+
+# Create submission folder for every board
+paste0("data/", format(start_month, "%Y-%m"), "/submitted/", boards) %>%
+  walk(use_directory)
+
+# Create folder for trend files
+use_directory("trend")
+
+
+### 4 - Define filepaths dependent on whether running on server or desktop ----
 
 stats <- case_when(
   sessionInfo()$platform == "x86_64-pc-linux-gnu (64-bit)" ~ "/conf",
@@ -52,31 +67,31 @@ cl_out <- case_when(
 )
 
 
-### 4 - Define lookup files ----
+### 5 - Define lookup files ----
 
-postcode <- function(){
+pc_lookup <- function(){
   glue("{cl_out}/lookups/Unicode/Geography/Scottish Postcode Directory/",
-       "Scottish_Postcode_Directory_2020_1.rds") %>%
+       "Scottish_Postcode_Directory_2020_2.rds") %>%
     read_rds() %>%
     clean_names() %>%
     select(pc7, datazone = datazone2011)
 }
   
-specialty <- function(){
-  glue("{cl_out}/lookups/Unicode/National Reference Files/specialt.rds") %>%
-    read_rds() %>%
+spec_lookup <- function(){
+  glue("{cl_out}/lookups/Unicode/National Reference Files/specialt.sav") %>%
+    read_sav() %>%
     clean_names() %>%
-    select(spec_code = speccode, spec_desc = description)
+    select(specialty_code = speccode, specialty_desc = description)
 }
   
-location <- function(){
-  glue("{cl_out}/lookups/Unicode/National Reference Files/location.rds") %>%
-    read_rds() %>%
+location_lookup <- function(){
+  glue("{cl_out}/lookups/Unicode/National Reference Files/location.sav") %>%
+    read_sav() %>%
     clean_names() %>%
-    select(location, location_name = locname)
+    select(location, locname)
 }
   
-hscp_locality <- function(){
+hscp_locality_lookup <- function(){
   glue("{cl_out}/lookups/Unicode/Geography/HSCP Locality/",
        "HSCP Localities_DZ11_Lookup_20191216.rds") %>%
     read_rds() %>%
@@ -84,6 +99,36 @@ hscp_locality <- function(){
     select(datazone = datazone2011,
            hscp = hscp2019name,
            locality = hscp_locality)
+}
+
+hb_lookup <- function(){
+  paste0("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-",
+         "d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/",
+         "download/hb14_hb19.csv") %>%
+    read_csv() %>%
+    clean_names() %>%
+    filter(is.na(hb_date_archived)) %>%
+    mutate(hb_name = str_replace(hb_name, " and ", " & ")) %>%
+    select(healthboard_code = hb, 
+           healthboard = hb_name)
+}
+
+la_lookup <- function(){
+  paste0("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-",
+           "d6e17229cc7b/resource/967937c4-8d67-4f39-974f-fd58c4acfda5/",
+           "download/ca11_ca19.csv") %>%
+    read_csv() %>%
+    clean_names() %>%
+    filter(is.na(ca_date_archived)) %>%
+    mutate(ca_name = case_when(
+      ca_name == "Na h-Eileanan Siar" ~ "Comhairle nan Eilean Siar",
+      str_detect(ca_name, " Islands") ~ str_remove(ca_name, " Islands"),
+      str_detect(ca_name, " and ") ~ str_replace(ca_name, " and ", " & "),
+      TRUE ~ ca_name
+    )) %>%
+    select(local_authority_area_code = ca, 
+           local_authority_area = ca_name) %>%
+    distinct()
 }
 
 
