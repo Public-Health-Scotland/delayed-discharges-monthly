@@ -139,8 +139,8 @@ Scot_HB_la %<>% filter(reas1 %in% c("Health and Social Care Reasons",
 Scot_HB_la %>% mutate(reas1 = "All")
 
 ScotHBlaallreasonsalldelaystotal <- Scot_HB_la %>%
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reas1) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
