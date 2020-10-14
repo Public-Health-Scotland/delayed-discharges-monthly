@@ -153,13 +153,12 @@ Tabs136 <- bind_rows(ScotHBlaallreasonsalldelaystotal,
 
 ### 6 - Detailed reason breakdown ----
 # Get main census file (datafile2)
-datafile %>% mutate(level = "1", areaname = "Scotland", age_grp = "All")
-
 # copy secondary Code 9 codes into delay reason - e.g. delay reason 9 becomes 51X etc..
 # then update reas1 with individual delay codes in delayreason
-Scotlandindreasons <- datafile %>% 
-  group_by(year, MONTHFLAG, level, areaname, age_grp, reason_grp_high_level) %>%
-  summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
+Scotlandindreasons <- datafile2 %>% 
+  mutate(level = "1", areaname = "Scotland", age_grp = "All") %>%
+  group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
