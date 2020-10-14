@@ -79,13 +79,13 @@ HBbysubreasongrouping <- datafile2 %>%
 datafile2 %<>% mutate(level = "3", 
                       areaname = local_authority_area)
 
-labymainreasongrouping <- datafile %>%
+labymainreasongrouping <- datafile2 %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
   summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
-labysubreasongrouping <- datafile %>%
+labysubreasongrouping <- datafile2 %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas2) %>%
   summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
