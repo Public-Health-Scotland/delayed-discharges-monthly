@@ -306,24 +306,24 @@ write.xlsx(datafile27, here::here("outputs", "HB bed days data sheet_R.xlsx"))
 
 ### 12 - LA bed days  ----
 
-labedstemplate <- read.csv(paste0(filepath2, "la_template.csv")) %>% 
-  rename(LocalAuthorityArea = LA, age_grp = age) %>% 
-  mutate(LocalAuthorityArea = toupper(LocalAuthorityArea), 
-         age_grp = toupper(age_grp), 
+labedstemplate <- read_csv(here::here("templates", "la_template.csv")) %>% 
+  rename(local_authority_area = LA, age_grouping = age) %>% 
+  mutate(local_authority_area = toupper(local_authority_area), 
+         age_grouping = toupper(age_grouping), 
          reas1 = toupper(reas1))
 
-datafile20 %<>% mutate(LocalAuthorityArea = toupper(LocalAuthorityArea), 
-                       age_grp = toupper(age_grp),
+datafile20 %<>% mutate(local_authority_area = toupper(local_authority_area), 
+                       age_grouping = toupper(age_grouping),
                        reas1 = toupper(reas1))
 
 # Amend variables as necessary in order for match_numbering to work
 labeddaysdatasheetminusstandard <- left_join(datafile20, labedstemplate,
-                                             by = c(("LocalAuthorityArea" = "LocalAuthorityArea"), 
-                                                    ("age_grp" = "age_grp"), 
+                                             by = c(("local_authority_area" = "local_authority_area"), 
+                                                    ("age_grouping" = "age_grouping"), 
                                                     ("reas1" = "reas1"))) %>% 
-  arrange(labeddaysdatasheetminusstandard, LocalAuthorityArea, age_grp, reas1) %>% 
-  mutate(LocalAuthorityArea = toupper(LocalAuthorityArea), 
-         age_grp = toupper(age_grp), 
+  arrange(local_authority_area, age_grouping, reas1) %>% 
+  mutate(local_authority_area = toupper(local_authority_area), 
+         age_grouping = toupper(age_grouping), 
          reas1 = toupper(reas1))
 
 # Add in total for Standard filter on any row that isn't all
@@ -339,25 +339,25 @@ datafile33 <- filter(datafile32, reas1 == "STANDARD")
 
 # Aggregate LA Standard delays
 lastandard <- datafile33 %>% 
-  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
-  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+  group_by(local_authority_area, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
 lastandardandothers <- bind_rows(lastandard, labeddaysdatasheetminusstandard) %>% 
-  mutate(LocalAuthorityArea = toupper(LocalAuthorityArea),
-         age_grp = toupper(age_grp),
+  mutate(local_authority_area = toupper(local_authority_area),
+         age_grouping = toupper(age_grouping),
          reas1 = toupper(reas1)) %>% 
   # Issue here is that the rows with zeros don't appear so have to match to output file
-  arrange(lastandardandothers, LocalAuthorityArea, age_grp, reas1) 
+  arrange(local_authority_area, age_grouping, reas1) 
 
 # Match files
 laallvariations <- left_join(labedstemplate, lastandardandothers,
-                             by = c(("LocalAuthorityArea" = "LocalAuthorityArea"), 
-                                    ("age_grp" = "age_grp"), 
+                             by = c(("local_authority_area" = "local_authority_area"), 
+                                    ("age_grouping" = "age_grouping"), 
                                     ("reas1" = "reas1"))) %>% 
   # Replace obds in correct column for all reason groups 
-  mutate(OBDs = if_else(is.na(OBDs), 0L, OBDs)) %>% 
-  arrange(LocalAuthorityArea, age_grp, reas1)
+  mutate(obds = if_else(is.na(obds), 0, obds)) %>% 
+  arrange(local_authority_area, age_grouping, reas1)
 
 
 ### 13 - Save out LA file ----
