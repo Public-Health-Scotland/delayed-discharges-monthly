@@ -12,38 +12,31 @@
 #               publication monthflag.
 #########################################################################
 
-### 1 - Load setup environment and functions ----
+
+### 0 - Load setup environment and functions ----
 
 # Setup environment
-  
 source(here::here("code", "00_setup_environment.R"))
 
 # Functions
-  
 walk(list.files(here("functions"), full.names = TRUE), source)
 
  
 
-### 1a - Import Scotland_validated file ----
+### 1 - Import Scotland_validated file ----
 
-#datafile <- readRDS(scotland, here("data", format(start_month, "%Y-%m"), paste0(format(start_month, "%Y-%m"), "_scotland.rds")))
-datafile<-readRDS(paste0('/conf/delayed_discharges/RAP development/2020_06/data/scotland/2020-06_scotland.rds'))
+datafile <- readRDS(here::here("data", format(start_month, "%Y-%m"), 
+                               paste0(format(start_month, "%Y-%m"), 
+                                      "_scotland.rds")))
 
-# Filter to remove 'Code 100'
-  
-datafile <- datafile %>% filter(datafile$reas1 != "Code 100")
-
-
-#Create new variable called areaname
-
-datafile<-datafile %>% mutate(areaname=" ")
+# Tidy data
+datafile %<>% filter(reas1 != "Code 100") %>%   # Filter 'Code 100'
+  mutate(areaname = " ")                  # Add variable 'areaname'
 
 
-#Save census data file
-
-
-#datafile2 <- filter(datafile, !reasonfordelaysecondary %in%c("26X","46X") & census_flag=="Y")
-datafile2 <- filter(datafile, !reasonfordelaysecondary %in%c("26X","46X") & census_flag==1)
+# Create census data file
+datafile2 <- filter(datafile, !reasonfordelaysecondary %in% 
+                      c("26X", "46X") & census_flag == 1)
 
 
 # 1b. Create Reason 2 Groupings ----
