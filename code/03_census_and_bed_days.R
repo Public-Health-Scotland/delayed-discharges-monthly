@@ -94,22 +94,24 @@ labysubreasongrouping <- datafile %>%
 
 ### 3 - Combine summary dataframes ----
 
-Scot_HB_la <- bind_rows(Scotlandbymainreasongrouping, Scotlandbysubreasongrouping, HBbymainreasongrouping, HBbysubreasongrouping, labymainreasongrouping, labysubreasongrouping)
+Scot_HB_la <- bind_rows(Scotlandbymainreasongrouping, 
+                        Scotlandbysubreasongrouping, 
+                        HBbymainreasongrouping, 
+                        HBbysubreasongrouping, 
+                        labymainreasongrouping, 
+                        labysubreasongrouping)
 
-
-Scot_HB_la %>% 
+Scot_HB_la %<>% 
   mutate(reas1 = as.character(reas1)) %>% 
   mutate(reas1 = if_else(is.na(reas1), reas2, reas1))
 
-
 Scot_HB_la %<>% mutate(age_grp = "All")
 
-ScotHBlaallage_grps<- Scot_HB_la %>%
+ScotHBlaallage_grps <- Scot_HB_la %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
   summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
-
 
 ScotHBlaallreasonexcHSCPatFamtotal <- bind_rows(Scot_HB_la, ScotHBlaallage_grps)
 
