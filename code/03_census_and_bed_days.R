@@ -23,7 +23,7 @@ walk(list.files(here("functions"), full.names = TRUE), source)
 
  
 
-### 1 - Import Scotland_validated file ----
+### 1 - Import scotland_validated file ----
 
 datafile <- readRDS(here::here("data", format(start_month, "%Y-%m"), 
                                paste0(format(start_month, "%Y-%m"), 
@@ -39,40 +39,17 @@ datafile2 <- filter(datafile, !reasonfordelaysecondary %in%
                       c("26X", "46X") & census_flag == 1)
 
 
-# 1b. Create Reason 2 Groupings ----
+### 2 - Breakdown by Reason/Age Group
 
-##Sub grouping reason_grp for code 9s are currently being classed as H&SC or Pat/Fam reasons. Ensure they are just code 9s.
-##Also bring in Transport as a separate category.
-
-datafile3<-datafile2 %>% 
-  mutate(reas2 = as.character(reas2))%>% 
-  mutate(reas2=
-           if_else(delay_description=="Adults with Incapacity Act", "Adults with Incapacity Act",reas2))
-
-datafile3<-datafile2 %>% 
-  mutate(reas2 = as.character(reas2))%>% 
-  mutate(reas2=
-           if_else(delay_description!="Adults with Incapacity Act" & reas1=="Code 9", "Other code 9 reasons(not AWI)",reas2))
-
-datafile3<-datafile2 %>% 
-  mutate(reas2 = as.character(reas2))%>% 
-  mutate(reas2=
-           if_else(delay_description=="Awaiting availability of transport","Transport",reas2))
-
-
-
-
-### 2 - Get reason / age_grp breakdown for Scotland (Level = 2) ----
-
-datafile2 %<>% mutate(level = "1", areaname = "Scotland")
+# Scotland Overview (Level 1)
+datafile2 %<>% mutate(level = "1", 
+                      areaname = "Scotland")
 
 Scotlandbymainreasongrouping <- datafile2 %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
-  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
-  ~ sum(., na.rm = TRUE)) %>%
+  summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled), 
+               ~ sum(., na.rm = TRUE)) %>%
   ungroup()
-
-
 
 Scotlandbysubreasongrouping <- datafile2 %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas2) %>%
@@ -81,19 +58,15 @@ Scotlandbysubreasongrouping <- datafile2 %>%
   ungroup()
 
 
-
-
-### 3 - Breakdown for HBs (Level = 2) ----
-datafile2 %<>% mutate(level = "2", areaname = healthboard)
+# Health Board Overview (Level 2)
+datafile2 %<>% mutate(level = "2", 
+                      areaname = healthboard)
 
 HBbymainreasongrouping <- datafile2 %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
   summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
-
-
-
 
 HBbysubreasongrouping <- datafile2 %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas2) %>%
@@ -102,17 +75,15 @@ HBbysubreasongrouping <- datafile2 %>%
   ungroup()
 
 
-
-### 4 - Breakdown for LA (Level=3) ----
-datafile2 %<>% mutate(level = "3", areaname = local_authority_area)
-
+# Local Authority Overview (Level 3)
+datafile2 %<>% mutate(level = "3", 
+                      areaname = local_authority_area)
 
 labymainreasongrouping <- datafile %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
   summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
-
 
 labysubreasongrouping <- datafile %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas2) %>%
@@ -121,8 +92,7 @@ labysubreasongrouping <- datafile %>%
   ungroup()
 
 
-
-### 5 - Combine summary dataframes ----
+### 3 - Combine summary dataframes ----
 
 Scot_HB_la <- bind_rows(Scotlandbymainreasongrouping, Scotlandbysubreasongrouping, HBbymainreasongrouping, HBbysubreasongrouping, labymainreasongrouping, labysubreasongrouping)
 
