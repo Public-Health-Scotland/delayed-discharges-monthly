@@ -301,75 +301,69 @@ datafile27 <- left_join(hbbedstemplate, datafile26,
   arrange(Healthboard, age_grp, reas1)
 
 
-### 13 - Save out bed days HB file ----
+### 11 - Save out bed days HB file ----
 
 write.xlsx(datafile27, here::here("outputs", "HB bed days data sheet_R.xlsx"))
 
 
-### 14. LA bed days  ----
+### 12 - LA bed days  ----
 
-labedstemplate<-read.csv(paste0(filepath2,"la_template.csv"))
+labedstemplate <- read.csv(paste0(filepath2, "la_template.csv")) %>% 
+  rename(LocalAuthorityArea = LA, age_grp = age) %>% 
+  mutate(LocalAuthorityArea = toupper(LocalAuthorityArea), 
+         age_grp = toupper(age_grp), 
+         reas1 = toupper(reas1))
 
-labedstemplate <- labedstemplate %>% 
-  rename(LocalAuthorityArea = LA,
-         age_grp = age)
+datafile20 %<>% mutate(LocalAuthorityArea = toupper(LocalAuthorityArea), 
+                       age_grp = toupper(age_grp),
+                       reas1 = toupper(reas1))
 
-labedstemplate<-labedstemplate%>% mutate(LocalAuthorityArea=toupper(LocalAuthorityArea),age_grp=toupper(age_grp),reas1=toupper(reas1))
-datafile20<-datafile20%>% mutate(LocalAuthorityArea=toupper(LocalAuthorityArea),age_grp=toupper(age_grp),reas1=toupper(reas1))
+# Amend variables as necessary in order for match_numbering to work
+labeddaysdatasheetminusstandard <- left_join(datafile20, labedstemplate,
+                                             by = c(("LocalAuthorityArea" = "LocalAuthorityArea"), 
+                                                    ("age_grp" = "age_grp"), 
+                                                    ("reas1" = "reas1"))) %>% 
+  arrange(labeddaysdatasheetminusstandard, LocalAuthorityArea, age_grp, reas1) %>% 
+  mutate(LocalAuthorityArea = toupper(LocalAuthorityArea), 
+         age_grp = toupper(age_grp), 
+         reas1 = toupper(reas1))
 
+# Add in total for Standard filter on any row that isn't all
+datafile32a <- filter(labeddaysdatasheetminusstandard, reas1 != "ALL") 
+# Rename reason_grp_high_level as Standard where there isn't a Code 9
+datafile32 <- datafile32a %>% 
+  mutate(reas1 = if_else(reas1 %in% c("HEALTH AND SOCIAL CARE REASONS",
+                                      "PATIENT/CARER/FAMILY-RELATED REASONS"),
+                         "STANDARD", "CODE 9"))
 
+# Select standard only.
+datafile33 <- filter(datafile32, reas1 == "STANDARD")
 
-#amend variables as necessary in order for matchi_numberng to work
-
-labeddaysdatasheetminusstandard <- left_join(datafile20,labedstemplate,
-                                             by = c(("LocalAuthorityArea" = "LocalAuthorityArea"), ("age_grp"="age_grp"),("reas1"="reas1")) %>% 
-arrange(labeddaysdatasheetminusstandard,LocalAuthorityArea,age_grp,reas1)) # arrange data in order for tables
-
-
-labeddaysdatasheetminusstandard<-labeddaysdatasheetminusstandard%>% mutate(LocalAuthorityArea=toupper(LocalAuthorityArea),age_grp=toupper(age_grp),reas1=toupper(reas1))
-
-#Add in total for Standard filter on any row that isn't all
-datafile32a<-filter(labeddaysdatasheetminusstandard,reas1!="ALL") 
-#Rename reason_grp_high_level as Standard where there isn't a Code 9
-datafile32<-datafile32a%>% mutate(reas1=
-                                    if_else(reas1%in%c("HEALTH AND SOCIAL CARE REASONS","PATIENT/CARER/FAMILY-RELATED REASONS"),"STANDARD","CODE 9"))
-
-
-#select standard only.
-datafile33<-filter(datafile32,reas1=="STANDARD")
-# aggregate LA Standard delays
-
-lastandard<- datafile33 %>% 
-  group_by(LocalAuthorityArea,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+# Aggregate LA Standard delays
+lastandard <- datafile33 %>% 
+  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
-#datafile24<-datafile24%>%rename(OBDs2=obds_in_month)
+lastandardandothers <- bind_rows(lastandard, labeddaysdatasheetminusstandard) %>% 
+  mutate(LocalAuthorityArea = toupper(LocalAuthorityArea),
+         age_grp = toupper(age_grp),
+         reas1 = toupper(reas1)) %>% 
+  # Issue here is that the rows with zeros don't appear so have to match to output file
+  arrange(lastandardandothers, LocalAuthorityArea, age_grp, reas1) 
 
-lastandardandothers<- bind_rows(lastandard, labeddaysdatasheetminusstandard)
-lastandardandothers<-lastandardandothers%>% mutate(LocalAuthorityArea=toupper(LocalAuthorityArea),age_grp=toupper(age_grp),reas1=toupper(reas1) %>% 
-arrange(lastandardandothers,LocalAuthorityArea,age_grp,reas1)) # issue here is that the rows with zeros don't appear so have to match to output file
+# Match files
+laallvariations <- left_join(labedstemplate, lastandardandothers,
+                             by = c(("LocalAuthorityArea" = "LocalAuthorityArea"), 
+                                    ("age_grp" = "age_grp"), 
+                                    ("reas1" = "reas1"))) %>% 
+  # Replace obds in correct column for all reason groups 
+  mutate(OBDs = if_else(is.na(OBDs), 0L, OBDs)) %>% 
+  arrange(LocalAuthorityArea, age_grp, reas1)
 
-#datafile26<-read.csv(paste0(filepath2,"hb_template.csv"))
-#bhbbedstepmplate<-bhbbedstepmplate%>% mutate(nhs_board=toupper(nhs_board),age_grp=toupper(age_grp),reason_grp_high_level=toupper(reason_grp_high_level))
 
-#match files
-
-
-laallvariations <- left_join(labedstemplate,lastandardandothers,
-                             by = c(("LocalAuthorityArea" = "LocalAuthorityArea"), ("age_grp"="age_grp"),("reas1"="reas1")))
-
-#replace obds in correct column for all reason groups
-laallvariations<-laallvariations %>% mutate(OBDs=
-                                              if_else(is.na(OBDs),0L,OBDs) %>% 
-arrange(laallvariations,laallvariations$LocalAuthorityArea,laallvariations$age_grp,laallvariations$reas1))
-
-### 15. Save out LA file ----
-
+### 13 - Save out LA file ----
 write.xlsx(laallvariations, here::here("outputs", "LA bed days data sheet_R.xlsx"))
-
-
-
 
 
 ### END OF SCRIPT ###
