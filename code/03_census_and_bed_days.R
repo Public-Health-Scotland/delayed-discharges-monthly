@@ -132,10 +132,9 @@ ScotHBlaallreasonsincHSCPatFamtotal <- Scot_HB_la %>%
 
 ### 5 - Calculate the number of delays for all reasons ----
 
-Scot_HB_la %<>% filter(ScotHBlaallreasonexcHSCPatFamtotal, reas1 %in% 
-                         c("Health and Social Care Reasons", 
-                           "Code 9", 
-                           "Patient/Carer/Family-related reasons"))
+Scot_HB_la %<>% filter(reas1 %in% c("Health and Social Care Reasons",
+                                    "Code 9", 
+                                    "Patient/Carer/Family-related reasons"))
 
 Scot_HB_la %>% mutate(reas1 = "All")
 
