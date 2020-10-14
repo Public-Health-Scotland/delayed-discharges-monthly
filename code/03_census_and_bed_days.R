@@ -219,94 +219,86 @@ Scotlandhbbeddaysallagegrpsallreasons <- bind_rows(ScotlandhbAllage_grpsbeddays,
                                                    Scotlandhbbeddaysallagesallreasons)
 
 
-### 11 - LA Bed days ----
-#use la bed days diff age file 
-datafile17<-labeddaysdiffage_grp %>% mutate(age_grp="All")
+### 9 - LA Bed days ----
+# Use LA bed days diff age file 
+datafile17<-labeddaysdiffage_grp %>% mutate(age_grp = "All")
 
-
-labeddaysallage_grps<- datafile17 %>% 
-  group_by(LocalAuthorityArea,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+labeddaysallage_grps <- datafile17 %>% 
+  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
 datafile18 <- bind_rows(labeddaysallage_grps, labeddaysdiffage_grp)
 
+datafile19 <- datafile18 %>% mutate(reas1 = "All")
 
-datafile19<-datafile18 %>% mutate(reas1="All")
-
-labeddaysallreason_grp_high_level<- datafile19 %>% 
-  group_by(LocalAuthorityArea,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+labeddaysallreason_grp_high_level <- datafile19 %>% 
+  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
 datafile20 <- bind_rows(labeddaysallreason_grp_high_level, datafile18)
 
 
-#### 12 - HB Bed days ----
-#match in to hb data sheet template
-hbbedstemplate<-read.csv(paste0(filepath2,"hb_template.csv"))
+### 10 - HB Bed days ----
+# Match in to HB data sheet template
+hbbedstemplate <- read.csv(paste0(filepath2, "hb_template.csv"))
 
-hbbedstemplate <- hbbedstemplate %>% 
-  rename(Healthboard=hbname,
-         age_grp = age)
+hbbedstemplate %<>% 
+  rename(Healthboard = hbname, age_grp = age) %>% 
+  mutate(Healthboard = toupper(Healthboard), 
+         age_grp = toupper(age_grp), 
+         reas1 = toupper(reas1))
+
+# Amend variables as necessary in order for matching to work
+datafile21 <- left_join(Scotlandhbbeddaysallagegrpsallreasons, hbbedstemplate,
+                        by = c(("Healthboard" = "Healthboard"), 
+                               ("age_grp" = "age_grp"), 
+                               ("reas1" = "reas1"))) %>% 
+  arrange(Healthboard, age_grp, reas1) %>% 
+  mutate(Healthboard = toupper(Healthboard), 
+         age_grp = toupper(age_grp), 
+         reas1 = toupper(reas1))
+
+# Rename reason_grp_high_level as Standard where there isn't a Code 9
+datafile22 <- datafile21 %>% mutate(reas1 = 
+                                      if_else(reas1 %in% c("HEALTH AND SOCIAL CARE REASONS", 
+                                                           "PATIENT/CARER/FAMILY-RELATED REASONS"), 
+                                              "STANDARD", reas1))
+
+# Select standard only
+datafile23 <- filter(datafile22, reas1 == "STANDARD")
+
+datafile24 <- datafile23 %>% 
+  group_by(Healthboard, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  rename(obds3 = OBDs)
+
+# Match files
+datafile25 <- left_join(datafile24, datafile21,
+                        by = c(("Healthboard" = "Healthboard"), 
+                               ("age_grp" = "age_grp"), 
+                               ("reas1" = "reas1")))
+
+datafile25a <- bind_rows(datafile24, datafile21)
 
 
-hbbedstemplate<-hbbedstemplate%>% mutate(Healthboard=toupper(Healthboard),age_grp=toupper(age_grp),reas1=toupper(reas1))
+# Replace obds in correct column for all reason groups
+datafile26 <- datafile25a %>% 
+  mutate(OBDs = if_else(!is.na(obds3), obds3, OBDs)) %>% 
+  select(-obds3, -obds2)
 
-
-#amend variables as necessary in order for matching to work
-
-datafile21 <- left_join(Scotlandhbbeddaysallagegrpsallreasons,hbbedstemplate,
-                        by = c(("Healthboard" = "Healthboard"), ("age_grp"="age_grp"),("reas1"="reas1")))
-
-arrange(datafile21,Healthboard,age_grp,reas1) # arrange data in order for tables
-
-datafile21 %<>% mutate(Healthboard = toupper(Healthboard), age_grp = toupper(age_grp), reas1 = toupper(reas1))
-
-
-#Rename reason_grp_high_level as Standard where there isn't a Code 9
-datafile22<-datafile21%>% mutate(reas1=
-                                   if_else(reas1%in%c("HEALTH AND SOCIAL CARE REASONS","PATIENT/CARER/FAMILY-RELATED REASONS"),"STANDARD",reas1))
-
-
-#select standard only.
-datafile23<-filter(datafile22,reas1=="STANDARD")
-# aggregate 
-
-datafile24<- datafile23 %>% 
-  group_by(Healthboard,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
-  ungroup()
-
-datafile24<-datafile24%>%rename(obds3=OBDs)
-
-#match files
-datafile25 <- left_join(datafile24,datafile21,
-                        by = c(("Healthboard" = "Healthboard"), ("age_grp"="age_grp"),("reas1"="reas1")))
-
-datafile25a<-bind_rows(datafile24,datafile21)
-
-
-#replace obds in correct column for all reason groups
-datafile26<-datafile25a %>% mutate(OBDs=
-                                     if_else(!is.na(obds3),obds3,OBDs))
-
-#remove surplus columns
-datafile26<-select(datafile26,-obds3,-obds2)
-
-#match back to template to ensure every row is populated
-
-datafile27 <- left_join(hbbedstemplate,datafile26,
-                        by = c(("Healthboard" = "Healthboard"), ("age_grp"="age_grp"),("reas1"="reas1")))
-
-#replace obds in correct column for all reason groups
-datafile27<-datafile27 %>% mutate(OBDs=
-                                    if_else(is.na(OBDs),0L,OBDs))
-
-#remove surplus columns
-datafile27<-select(datafile27,-obds2)
-
-datafile27<-arrange(datafile27,datafile27$Healthboard,datafile27$age_grp,datafile27$reas1)
+# Match back to template to ensure every row is populated
+datafile27 <- left_join(hbbedstemplate, datafile26,
+                        by = c(("Healthboard" = "Healthboard"), 
+                               ("age_grp" = "age_grp"),
+                               ("reas1" = "reas1"))) %>% 
+  # Replace obds in correct column for all reason groups
+  mutate(OBDs = if_else(is.na(OBDs), 0L, OBDs)) %>%
+  # Remove surplus columns
+  select(-obds2) %>%
+  arrange(Healthboard, age_grp, reas1)
 
 
 ### 13 - Save out bed days HB file ----
