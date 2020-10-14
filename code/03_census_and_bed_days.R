@@ -116,38 +116,40 @@ ScotHBlaallage_grps <- Scot_HB_la %>%
 ScotHBlaallreasonexcHSCPatFamtotal <- bind_rows(Scot_HB_la, ScotHBlaallage_grps)
 
 
+### 4 - Calculate the total number of delays, excluding where code = 9 ----
 
-###6 - Calculate the total number of delays excluding where code = 9 ----
 Scot_HB_la %<>% 
-  filter(reas1 %in% c("Health and Social Care Reasons", "Patient/Carer/Family-related reasons")) %>%
+  filter(reas1 %in% c("Health and Social Care Reasons", 
+                      "Patient/Carer/Family-related reasons")) %>%
   mutate(reas1 = "All Delays excl. Code 9")
 
-
-ScotHBlaallreasonsincHSCPatFamtotal<- Scot_HB_la %>%
+ScotHBlaallreasonsincHSCPatFamtotal <- Scot_HB_la %>%
   group_by(fin_yr, monthflag, level, areaname, age_grouping, reas1) %>%
   summarise_at(vars(no_of_patients, delay1to3days:delay_over6wks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
-###7 - Calculate the number of delays for all reasons ----
 
-Scot_HB_la %<>% filter(ScotHBlaallreasonexcHSCPatFamtotal, reas1 %in% c("Health and Social Care Reasons", "Code 9", "Patient/Carer/Family-related reasons"))
+### 5 - Calculate the number of delays for all reasons ----
+
+Scot_HB_la %<>% filter(ScotHBlaallreasonexcHSCPatFamtotal, reas1 %in% 
+                         c("Health and Social Care Reasons", 
+                           "Code 9", 
+                           "Patient/Carer/Family-related reasons"))
 
 Scot_HB_la %>% mutate(reas1 = "All")
 
-ScotHBlaallreasonsalldelaystotal<- Scot_HB_la %>%
+ScotHBlaallreasonsalldelaystotal <- Scot_HB_la %>%
   group_by(year, MONTHFLAG, level, areaname, age_grp, reas1) %>%
   summarise_at(vars(num_pats, delay_1_to_3_days:delay_over_6_weeks, acute:notgpled),
                ~ sum(., na.rm = TRUE)) %>%
   ungroup()
 
-#Combine Scottish Health Boards All Reasons data frames
-
-
-Tabs136 <- bind_rows(ScotHBlaallreasonsalldelaystotal, ScotHBlaallreasonsincHSCPatFamtotal, ScotHBlaallreasonexcHSCPatFamtotal) %>%
-              arrange(areaname, age_grp, reas1)
-
-
+# Combine Scottish Health Boards All Reasons data frames
+Tabs136 <- bind_rows(ScotHBlaallreasonsalldelaystotal, 
+                     ScotHBlaallreasonsincHSCPatFamtotal, 
+                     ScotHBlaallreasonexcHSCPatFamtotal) %>% 
+  arrange(areaname, age_grp, reas1)
 
 
 ###8 - Detailed reason breakdown ----
