@@ -173,32 +173,32 @@ write.xlsx(datafile6, here::here("outputs", "All census data.xlsx"))
 ### 8 - Bed days data ----
 
 # Change nhs_board and remove the 'NHS_'
-datafile %>% mutate(Healthboard = substring(Healthboard, 5)) 
+datafile %>% mutate(healthboard = substring(healthboard, 5)) 
 
 hbbeddaysdiffage_grp <- datafile %>% 
-  group_by(Healthboard, age_grp, reas1) %>% 
-  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+  group_by(healthboard, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
 labeddaysdiffage_grp <- datafile %>% 
-  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
-  summarise(OBDs= sum(OBDs, na.rm = TRUE)) %>% 
+  group_by(local_authority_area, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
-datafile %<>% mutate(Healthboard = "Scotland")
+datafile %<>% mutate(healthboard = "Scotland")
 
 Scotbeddaysdiffage_grp <- datafile %>% 
-  group_by(Healthboard, age_grp, reas1) %>% 
-  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+  group_by(healthboard, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
 # Add files
 Scotlandhbbeddays <- bind_rows(Scotbeddaysdiffage_grp, hbbeddaysdiffage_grp)
 
 # Get Scotland and HB bed days for all ages
-Scotlandhbbeddays %<>% mutate(age_grp = "All") %>% 
-  group_by(Healthboard, age_grp, reas1) %>% 
-  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+Scotlandhbbeddays %<>% mutate(age_grouping = "All") %>% 
+  group_by(healthboard, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
 # Add files
@@ -209,8 +209,8 @@ Scotlandhbbeddaysallagesallreasons <- bind_rows(Scotlandhbbeddays,
 datafile15 <- Scotlandhbbeddaysallagesallreasons %>% mutate(reas1 = "All")
 
 ScotlandhbAllage_grpsbeddays <- datafile15 %>% 
-  group_by(Healthboard, age_grp, reas1) %>% 
-  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+  group_by(healthboard, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
 Scotlandhbbeddaysallagegrpsallreasons <- bind_rows(ScotlandhbAllage_grpsbeddays, 
