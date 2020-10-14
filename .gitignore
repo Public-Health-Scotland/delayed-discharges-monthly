@@ -23,6 +23,7 @@ ISD-NATIONAL-STATS-SUMMARY.docx
 *.[tT][xX][tT]
 
 # Excel files #
+*.xl*
 *.[xX][lL][sS][xXmMtT]?
 
 # SPSS formats #
