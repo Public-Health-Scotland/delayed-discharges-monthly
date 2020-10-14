@@ -7,6 +7,7 @@ odbc_connect.R
 # data folders #
 data/
 trend/
+templates/
 
 # Markdown output
 ISD-NATIONAL-STATS-REPORT.docx

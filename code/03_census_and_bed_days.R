@@ -240,7 +240,7 @@ datafile20 <- bind_rows(labeddaysallreason_grp_high_level, datafile18)
 
 ### 10 - HB Bed days ----
 # Match in to HB data sheet template
-hbbedstemplate <- read.csv(paste0(filepath2, "hb_template.csv"))
+hbbedstemplate <- read_csv(here::here("templates", "hb_template.csv"))
 
 hbbedstemplate %<>% 
   rename(Healthboard = hbname, age_grp = age) %>% 
