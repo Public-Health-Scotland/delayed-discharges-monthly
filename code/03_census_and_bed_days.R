@@ -219,11 +219,11 @@ Scotlandhbbeddaysallagegrpsallreasons <- bind_rows(ScotlandhbAllage_grpsbeddays,
 
 ### 9 - LA Bed days ----
 # Use LA bed days diff age file 
-datafile17<-labeddaysdiffage_grp %>% mutate(age_grp = "All")
+datafile17 <- labeddaysdiffage_grp %>% mutate(age_grp = "All")
 
 labeddaysallage_grps <- datafile17 %>% 
-  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
-  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+  group_by(local_authority_area, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
 datafile18 <- bind_rows(labeddaysallage_grps, labeddaysdiffage_grp)
@@ -231,8 +231,8 @@ datafile18 <- bind_rows(labeddaysallage_grps, labeddaysdiffage_grp)
 datafile19 <- datafile18 %>% mutate(reas1 = "All")
 
 labeddaysallreason_grp_high_level <- datafile19 %>% 
-  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
-  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
+  group_by(local_authority_area, age_grouping, reas1) %>% 
+  summarise(obds = sum(obds, na.rm = TRUE)) %>% 
   ungroup()
 
 datafile20 <- bind_rows(labeddaysallreason_grp_high_level, datafile18)
