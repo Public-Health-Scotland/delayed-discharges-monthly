@@ -167,65 +167,56 @@ Scotlandindreasons <- datafile %>%
 datafile6 <- bind_rows(Tabs136, Scotlandindreasons)
 
 
-### 9 - Save out census file ----
+### 7 - Save out census file ----
 
 write.xlsx(datafile6, here::here("outputs", "All census data.xlsx"))
 
 
+### 8 - Bed days data ----
 
-### 10. Bed days data ----
+# Change nhs_board and remove the 'NHS_'
+datafile %>% mutate(Healthboard = substring(Healthboard, 5)) 
 
-
-datafile %>% mutate(Healthboard = substring(Healthboard, 5)) # change nhs_board and remove the 'NHS_'
-
-hbbeddaysdiffage_grp<- datafile %>% 
-  group_by(Healthboard,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+hbbeddaysdiffage_grp <- datafile %>% 
+  group_by(Healthboard, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
-
-
-labeddaysdiffage_grp<- datafile %>% 
-  group_by(LocalAuthorityArea,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+labeddaysdiffage_grp <- datafile %>% 
+  group_by(LocalAuthorityArea, age_grp, reas1) %>% 
+  summarise(OBDs= sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
+datafile %<>% mutate(Healthboard = "Scotland")
 
-
-datafile %<>% mutate(Healthboard="Scotland")
-
-Scotbeddaysdiffage_grp<- datafile %>% 
-  group_by(Healthboard,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+Scotbeddaysdiffage_grp <- datafile %>% 
+  group_by(Healthboard, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
-
-# add files
-
+# Add files
 Scotlandhbbeddays <- bind_rows(Scotbeddaysdiffage_grp, hbbeddaysdiffage_grp)
 
 # Get Scotland and HB bed days for all ages
-
-Scotlandhbbeddays %<>% mutate(age_grp="All") %>% 
-  group_by(Healthboard,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+Scotlandhbbeddays %<>% mutate(age_grp = "All") %>% 
+  group_by(Healthboard, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
-#add files
+# Add files
+Scotlandhbbeddaysallagesallreasons <- bind_rows(Scotlandhbbeddays, 
+                                                Scotbeddaysdiffage_grp, 
+                                                hbbeddaysdiffage_grp)
 
-Scotlandhbbeddaysallagesallreasons <- bind_rows(Scotlandhbbeddays, Scotbeddaysdiffage_grp, hbbeddaysdiffage_grp)
-#write_sav(Scotandhbbeddaysallagesallreasons,paste0(filepath,"Scot and hb bed days_R.sav")) # save out file
+datafile15 <- Scotlandhbbeddaysallagesallreasons %>% mutate(reas1 = "All")
 
-datafile15<-Scotlandhbbeddaysallagesallreasons %>% mutate(reas1="All")
-
-ScotlandhbAllage_grpsbeddays<- datafile15 %>% 
-  group_by(Healthboard,age_grp,reas1) %>% 
-  summarise(OBDs=sum(OBDs,na.rm=TRUE)) %>% 
+ScotlandhbAllage_grpsbeddays <- datafile15 %>% 
+  group_by(Healthboard, age_grp, reas1) %>% 
+  summarise(OBDs = sum(OBDs, na.rm = TRUE)) %>% 
   ungroup()
 
-
-Scotlandhbbeddaysallagegrpsallreasons <- bind_rows(ScotlandhbAllage_grpsbeddays, Scotlandhbbeddaysallagesallreasons)
-
+Scotlandhbbeddaysallagegrpsallreasons <- bind_rows(ScotlandhbAllage_grpsbeddays, 
+                                                   Scotlandhbbeddaysallagesallreasons)
 
 
 ### 11 - LA Bed days ----
