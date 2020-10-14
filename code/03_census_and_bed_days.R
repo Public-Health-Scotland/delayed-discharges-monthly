@@ -1,14 +1,16 @@
-
-# Name of file: 04_Census_and_Bed_Days.R
-# Data Release: Monthly Delayed Discharges publication
-# Original author(s): Peter McClurg
-# Original date: August 2020
-# Type: Reproducible Analytical Pipeline (RAP)
-# Written/run on: R Studio SERVER
-# Version of R that the script was most recently run on: 3.6.1
-# Description of content: Updates trendfile with DD records from most recent publication monthflag.
-# Approximate run time: TBC
-
+#########################################################################
+# Name of file - 04_census_and_bed_days.R
+# Data release - Monthly Delayed Discharges publication
+# Original Authors - Peter McClurg
+# Orginal Date - August 2020
+#
+# Type - Reproducible Analytical Pipeline (RAP)
+# Written/run on - RStudio Server
+# Version of R - 3.6.1
+#
+# Description - Updates trendfile with DD records from most recent 
+#               publication monthflag.
+#########################################################################
 
 ### 1 - Load setup environment and functions ----
 
