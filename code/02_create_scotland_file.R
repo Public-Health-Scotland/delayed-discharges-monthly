@@ -40,11 +40,11 @@ scotland <-
 
 # Remove under 18s
 scotland %<>%
-  mutate(age_at_rdd = 
-           interval(patient_dob, readyfordischargedate) %>%
-           time_length("year") %>%
-           floor()) %>%
-  filter(age_at_rdd >= 18)
+  mutate(age = age_calc(date_of_birth, ready_for_discharge_date,
+                        units = "years") %>%
+               floor(),
+         .after = date_of_birth) %>%
+  filter(age >= 18)
 
 # Remove records where Ready for Discharge date is same as Discharge Date
 scotland %<>%

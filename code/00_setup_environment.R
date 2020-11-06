@@ -30,6 +30,7 @@ library(magrittr)     # For the %<>%
 library(glue)         # For working with strings
 library(almanac)      # For working with recurring dates
 library(usethis)      # For creating new folders
+library(eeptools)     # For calculating age
 
 
 ### 2 - Define month start date and derive end date ----
