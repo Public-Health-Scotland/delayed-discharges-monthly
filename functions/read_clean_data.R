@@ -15,35 +15,34 @@ read_clean_data <- function(filepath){
   
   data %>%
     
-    # Rename some incorrectly named variables
-    rename_all(~ str_replace(., "pc7", "PatientPostcode")) %>%
-    rename_all(~ str_replace(., "idicator", "indicator")) %>%
-    
-    # Rename old naming convention to new
-    rename_all(~ str_replace(., "NHS Board", "Healthboard")) %>%
-    rename_all(~ str_replace(., "Monthflag", "MONTHFLAG")) %>%
-    rename_all(~ str_replace(., "Discharge Hospital Nat Code", 
-                                "HealthLocationCode")) %>%
-    rename_all(~ str_replace(., "CHI Number", "CHINo")) %>%
-    rename_all(~ str_replace(., "^Postcode$", "PatientPostcode")) %>%
-    rename_all(~ str_replace(., "Local Authority Code", 
-                                "LocalAuthorityArea")) %>%
-    rename_all(~ str_replace(., "Date of Birth", "PatientDOB")) %>%
-    rename_all(~ str_replace(., "Discharge Specialty Nat Code", 
-                                "SpecialtyCode")) %>%
-    rename_all(~ str_replace(., "Date Referred for SW Assessment", 
-                                "DateReferralReceived")) %>%
-    rename_all(~ str_replace(., "Date Declared Medically Fit", 
-                                "Readyfordischargedate")) %>%
-    rename_all(~ str_replace(., "DD_Code_1", "REASONFORDELAY")) %>%
-    rename_all(~ str_replace(., "DD_Code_2", "REASONFORDELAYSECONDARY")) %>%
-    rename_all(~ str_replace(., "Out of Area Case Indicator", 
-                                "Outofareacaseindicator")) %>%
-    rename_all(~ str_replace(., "Admission Date", "OriginalAdmissionDate")) %>%
-    rename_all(~ str_replace(., "Sex Code", "Gender")) %>%
-    rename_all(~ str_replace(., "Delay End Date", "DateDischarge")) %>%
-    rename_all(~ str_replace(., "Discharge Date", "DateDischarge")) %>%
-    rename_all(~ str_replace(., "Discharge To Code", "DischargeReason")) %>%
+    rename_with(~ "health_board", matches(c("NHS Board", "Healthboard"))) %>%
+    rename_with(~ "month", matches("monthflag")) %>%
+    rename_with(~ "location_code", 
+                matches(c("HealthLocationCode", 
+                          "Discharge Hospital Nat Code"))) %>%
+    rename_with(~ "chi", contains("CHI")) %>%
+    rename_with(~ "patient_postcode", contains(c("pc", "postcode"))) %>%
+    rename_with(~ "local_authority", 
+                contains(c("Local Authority", "LocalAuthority"))) %>%
+    rename_with(~ "date_of_birth", contains(c("DOB", "Date of Birth"))) %>%
+    rename_with(~ "specialty_code", contains("specialty")) %>%
+    rename_with(~ "referral_date", contains(c("referral", "referred"))) %>%
+    rename_with(~ "ready_for_discharge_date", 
+                contains(c("ready", "medically"))) %>%
+    rename_with(~ "reason_for_delay_secondary", 
+                contains(c("secondary", "DD_Code_2"))) %>%
+    rename_with(~ "reason_for_delay", 
+                contains(c("reasonfordelay", "DD_Code_1"))) %>%
+    rename_with(~ "out_of_area", 
+                contains(c("outofarea", "out of area"))) %>%
+    rename_with(~ "admission_date", contains("admission")) %>%
+    rename_with(~ "sex", contains(c("sex", "gender"))) %>%
+    rename_with(~ "discharge_date", 
+                contains(c("delay end date", 
+                           "discharge date", 
+                           "datedischarge"))) %>%
+    rename_with(~ "discharge_reason", 
+                contains(c("dischargereason", "discharge to code"))) %>%
     
     clean_names() %>%
     
@@ -51,22 +50,21 @@ read_clean_data <- function(filepath){
     mutate_if(is.character, ~ str_trim(., side = "both")) %>%
     
     # Remove leading zero from coded variables
-    mutate(across(c(local_authority_area, reasonfordelay,
-                    reasonfordelaysecondary, gender, discharge_reason),
+    mutate(across(c(local_authority, reason_for_delay,
+                    reason_for_delay_secondary, sex, discharge_reason),
                   ~ str_remove_all(., "^0*"))) %>%
     
     # Code all blanks as NA
     mutate_all(na_if, "") %>%
     
     # Ensure all reason for delay codes upper case
-    mutate(across(contains("reasonfordelay"), toupper)) %>%
+    mutate(across(contains("reason_for_delay"), toupper)) %>%
     
     # Format dates
-    mutate(across(contains("date"), dmy),
-           across(contains("dob"), dmy)) %>%
+    mutate(across(contains("date"), dmy)) %>%
     
     # Pad CHI Number
-    mutate(chi_no = chi_pad(chi_no)) %>%
+    mutate(chi = chi_pad(chi)) %>%
     
     # Format postcode
     mutate(patient_postcode = postcode(patient_postcode))
