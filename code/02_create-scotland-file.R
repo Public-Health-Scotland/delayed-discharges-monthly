@@ -48,80 +48,79 @@ scotland %<>%
 
 # Remove records where Ready for Discharge date is same as Discharge Date
 scotland %<>%
-  filter(readyfordischargedate != date_discharge | is.na(date_discharge))
+  filter(ready_for_discharge_date != discharge_date | is.na(discharge_date))
 
 # Remove records where Ready for Discharge date is last day of month
 scotland %<>%
-  filter(readyfordischargedate != end_month)
+  filter(ready_for_discharge_date != end_month)
   
 
 ### 3 - Recoding ----
 
 # Add month flag
 scotland %<>%
-  mutate(monthflag = format(start_month, "%b %Y"))
+  mutate(month = format(start_month, "%b %Y"))
 
 # Recode Local Authority codes to names
 scotland %<>%
   left_join(
     read_rds(here("lookups", "local-authority.rds")), 
-    by = c("local_authority_area" = "la_code")
+    by = c("local_authority" = "la_code")
   ) %>%
-  mutate(local_authority_area = case_when(
+  mutate(local_authority = case_when(
     !is.na(la_desc) ~ la_desc,
-    TRUE ~ local_authority_area
+    TRUE ~ local_authority
   )) %>%
   select(-la_desc)
 
 # Recode out of area flag
 scotland %<>%
-  mutate(outofareacaseindicator = 
+  mutate(out_of_area = 
            case_when(
-             str_detect(outofareacaseindicator, "^(Y|y)") ~ 1,
-             str_detect(outofareacaseindicator, "^(N|n)") ~ 0,
-             is.na(outofareacaseindicator) ~ 0
+             str_detect(out_of_area, "^(Y|y)") ~ 1,
+             str_detect(out_of_area, "^(N|n)") ~ 0,
+             is.na(out_of_area) ~ 0
            ))
 
 # Recode gender
 scotland %<>%
-  mutate(gender = 
+  mutate(sex = 
            case_when(
-             str_detect(gender, "(1|M)") ~ "Male",
-             str_detect(gender, "(2|F)") ~ "Female"
+             str_detect(sex, "(1|M)") ~ "Male",
+             str_detect(sex, "(2|F)") ~ "Female"
            ))
 
-# Recode reason for delay
+# Code missing reason for delay as 11A
 scotland %<>%
-  # Code missing reason for delay as 11A
-  mutate(reasonfordelay = 
-           if_else(is.na(reasonfordelay) & is.na(reasonfordelaysecondary),
+  mutate(delay_reason_1 = 
+           if_else(is.na(delay_reason_1) & is.na(delay_reason_2),
                    "11A", 
-                   reasonfordelay)) 
+                   delay_reason_1))
 
 
 ### 4 - Derivations ----
 
 # Add age groups
 scotland %<>%
-  mutate(age_grouping = case_when(
-    age_at_rdd %in% 18:74 ~ "18-74",
-    age_at_rdd >=   75    ~ "75+"
+  mutate(age_group = case_when(
+    age %in% 18:74 ~ "18-74",
+    age >=   75    ~ "75+"
   ))
 
 # Add Reason for Delay groupings
 scotland %<>%
   mutate(reason_match =
            case_when(
-             reasonfordelay == 9 ~ reasonfordelaysecondary,
-             TRUE ~ reasonfordelay
+             delay_reason_1 == 9 ~ delay_reason_2,
+             TRUE ~ delay_reason_1
            )) %>%
   left_join(
     read_rds(here("lookups", "reason-for-delay.rds")),
     by = c("reason_match" = "code")
   ) %>%
-  rename(reas1 = group1,
-         reas2 = group2,
-         delay_description = description) %>%
+  rename(reason_group_1 = group1,
+         reason_group_2 = group2,
+         reason_description = description) %>%
   select(-reason_match)
 
 # Add census flag
@@ -129,30 +128,31 @@ scotland %<>%
   mutate(
     census_date = census_date(start_month),
     census_flag = case_when(
-      reasonfordelaysecondary %in% c("26X", "46X") ~ 0,
-      readyfordischargedate < census_date & is.na(date_discharge) ~ 1,
-      readyfordischargedate < census_date & date_discharge >= census_date ~ 1,
+      delay_reason_2 %in% c("26X", "46X") ~ 0,
+      ready_for_discharge_date < census_date & is.na(discharge_date) ~ 1,
+      ready_for_discharge_date < census_date & 
+        discharge_date >= census_date ~ 1,
       TRUE ~ 0
     )
   )
 
-# Add disch within 3 working days of census
-scotland %<>%
-  mutate(dischargewithin3days_census = case_when(
-    census_flag == 1 & date_discharge <= census_date + days(5) ~ 1,
-    TRUE ~ 0
-  ))
+# Add disch within 3 working days of census - CHECK IF THIS REQUIRED
+# scotland %<>%
+#   mutate(disch_3days_census = case_when(
+#     census_flag == 1 & date_discharge <= census_date + days(5) ~ 1,
+#     TRUE ~ 0
+#   ))
 
 # Calculate number of bed days in month
 scotland %<>%
   mutate(
-    start_date = if_else(readyfordischargedate < start_month, 
+    start_date = if_else(ready_for_discharge_date < start_month, 
                          start_month - days(1),
-                         readyfordischargedate),
-    end_date   = if_else(date_discharge > end_month | is.na(date_discharge),
+                         ready_for_discharge_date),
+    end_date   = if_else(discharge_date > end_month | is.na(discharge_date),
                          end_month, 
-                         date_discharge),
-    obds = time_length(interval(start_date, end_date), "days")
+                         discharge_date),
+    bed_days = time_length(interval(start_date, end_date), "days")
   ) %>%
   select(-start_date, -end_date)
 
@@ -160,7 +160,7 @@ scotland %<>%
 scotland %<>%
   mutate(delay_at_census = case_when(
     census_flag == 1 ~ 
-      time_length(interval(readyfordischargedate, census_date), "days"),
+      time_length(interval(ready_for_discharge_date, census_date), "days"),
     TRUE ~ 0
   ))
 
@@ -208,7 +208,7 @@ scotland %<>%
     read_rds(here("lookups", "acute-hospitals.rds")) %>% 
       select(-hospname) %>%
       mutate(acute = 1),
-    by = c("health_location_code" = "hosp")
+    by = c("location_code" = "hosp")
   ) %>%
   replace_na(list(acute = 0)) %>%
   mutate(
@@ -219,7 +219,7 @@ scotland %<>%
 # Add discharged within month flag
 scotland %<>%
   mutate(disch_in_month = case_when(
-    between(date_discharge, start_month, end_month) ~ 1,
+    between(discharge_date, start_month, end_month) ~ 1,
     TRUE ~ 0
   ))
 
@@ -229,10 +229,10 @@ scotland %<>%
 
 # Add weekdays
 scotland %<>%
-  mutate(rdd_day = weekdays(readyfordischargedate), 
-         .after = readyfordischargedate) %>%
-  mutate(disch_day = weekdays(date_discharge),
-         .after = date_discharge)
+  mutate(rdd_day = weekdays(ready_for_discharge_date), 
+         .after = ready_for_discharge_date) %>%
+  mutate(disch_day = weekdays(discharge_date),
+         .after = discharge_date)
 
 # Add date information
 scotland %<>%
