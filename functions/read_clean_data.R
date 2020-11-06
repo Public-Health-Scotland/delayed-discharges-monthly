@@ -29,9 +29,9 @@ read_clean_data <- function(filepath){
     rename_with(~ "referral_date", contains(c("referral", "referred"))) %>%
     rename_with(~ "ready_for_discharge_date", 
                 contains(c("ready", "medically"))) %>%
-    rename_with(~ "reason_for_delay_secondary", 
+    rename_with(~ "delay_reason_2", 
                 contains(c("secondary", "DD_Code_2"))) %>%
-    rename_with(~ "reason_for_delay", 
+    rename_with(~ "delay_reason_1", 
                 contains(c("reasonfordelay", "DD_Code_1"))) %>%
     rename_with(~ "out_of_area", 
                 contains(c("outofarea", "out of area"))) %>%
@@ -50,15 +50,15 @@ read_clean_data <- function(filepath){
     mutate_if(is.character, ~ str_trim(., side = "both")) %>%
     
     # Remove leading zero from coded variables
-    mutate(across(c(local_authority, reason_for_delay,
-                    reason_for_delay_secondary, sex, discharge_reason),
+    mutate(across(c(local_authority, delay_reason_1, delay_reason_2,
+                    sex, discharge_reason),
                   ~ str_remove_all(., "^0*"))) %>%
     
     # Code all blanks as NA
     mutate_all(na_if, "") %>%
     
     # Ensure all reason for delay codes upper case
-    mutate(across(contains("reason_for_delay"), toupper)) %>%
+    mutate(across(contains("delay_reason"), toupper)) %>%
     
     # Format dates
     mutate(across(contains("date"), dmy)) %>%
