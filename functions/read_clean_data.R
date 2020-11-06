@@ -67,6 +67,13 @@ read_clean_data <- function(filepath){
     mutate(chi = chi_pad(chi)) %>%
     
     # Format postcode
-    mutate(patient_postcode = postcode(patient_postcode))
+    mutate(patient_postcode = postcode(patient_postcode)) %>%
+    
+    # Reorder columns
+    select(month, chi, patient_postcode, sex, date_of_birth, 
+           health_board, local_authority, out_of_area, location_code, 
+           specialty_code, delay_reason_1, delay_reason_2,
+           admission_date, referral_date, ready_for_discharge_date,
+           discharge_date, discharge_reason)
   
 }

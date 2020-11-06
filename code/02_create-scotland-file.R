@@ -15,7 +15,7 @@
 
 ### 0 - Load setup environment and functions ----
 
-source(here::here("code", "00_setup_environment.R"))
+source(here::here("code", "00_setup-environment.R"))
 
 walk(list.files(here("functions"), full.names = TRUE), source)
 
@@ -82,7 +82,7 @@ scotland %<>%
              is.na(out_of_area) ~ 0
            ))
 
-# Recode gender
+# Recode sex
 scotland %<>%
   mutate(sex = 
            case_when(
@@ -105,7 +105,8 @@ scotland %<>%
   mutate(age_group = case_when(
     age %in% 18:74 ~ "18-74",
     age >=   75    ~ "75+"
-  ))
+  ),
+  .after =  age)
 
 # Add Reason for Delay groupings
 scotland %<>%
@@ -121,27 +122,8 @@ scotland %<>%
   rename(reason_group_1 = group1,
          reason_group_2 = group2,
          reason_description = description) %>%
+  relocate(starts_with("reason"), .after = delay_reason_2) %>%
   select(-reason_match)
-
-# Add census flag
-scotland %<>%
-  mutate(
-    census_date = census_date(start_month),
-    census_flag = case_when(
-      delay_reason_2 %in% c("26X", "46X") ~ 0,
-      ready_for_discharge_date < census_date & is.na(discharge_date) ~ 1,
-      ready_for_discharge_date < census_date & 
-        discharge_date >= census_date ~ 1,
-      TRUE ~ 0
-    )
-  )
-
-# Add disch within 3 working days of census - CHECK IF THIS REQUIRED
-# scotland %<>%
-#   mutate(disch_3days_census = case_when(
-#     census_flag == 1 & date_discharge <= census_date + days(5) ~ 1,
-#     TRUE ~ 0
-#   ))
 
 # Calculate number of bed days in month
 scotland %<>%
@@ -156,6 +138,19 @@ scotland %<>%
   ) %>%
   select(-start_date, -end_date)
 
+# Add census flag
+scotland %<>%
+  mutate(census_date = census_date(start_month), .before = everything()) %>%
+  mutate(
+    census_flag = case_when(
+      delay_reason_2 %in% c("26X", "46X") ~ 0,
+      ready_for_discharge_date < census_date & is.na(discharge_date) ~ 1,
+      ready_for_discharge_date < census_date & 
+        discharge_date >= census_date ~ 1,
+      TRUE ~ 0
+    )
+  )
+
 # Calulcate length of delay at census
 scotland %<>%
   mutate(delay_at_census = case_when(
@@ -166,37 +161,19 @@ scotland %<>%
 
 # Add delay length grouping
 scotland %<>%
-  mutate(delay_length_group = case_when(
-    delay_at_census %in% 1:3     ~ "1-3 days",
-    delay_at_census %in% 4:14    ~ "3-14 days",
-    delay_at_census %in% 15:28   ~ "2-4 weeks",
-    delay_at_census %in% 29:42   ~ "4-6 weeks",
-    delay_at_census %in% 43:84   ~ "6-12 weeks",
-    delay_at_census %in% 85:182  ~ "3-6 months",
-    delay_at_census %in% 183:365 ~ "6-12 months",
-    delay_at_census > 365        ~ "12+ months",
-    census_flag == 0             ~ NA_character_
-  ),
-  delay_names = case_when(
-    !is.na(delay_length_group) ~
-      paste0("delay", 
-             delay_length_group %>%
-               str_remove_all(" ") %>%
-               str_replace("-", "to") %>%
-               str_replace("12\\+", "_over12")),
-    TRUE ~ NA_character_
-  ),
-  delay_value = 1) %>%
-  pivot_wider(names_from  = delay_names,
-              values_from = delay_value,
-              values_fill = list(delay_value = 0)) %>%
-  select(-`NA`) %>%
-  relocate(c("delay1to3days", "delay3to14days", "delay2to4weeks", "delay4to6weeks",
-             "delay6to12weeks", "delay3to6months", "delay6to12months", "delay_over12months"),
-           .after = delay_length_group) %>%
   mutate(
+    delay_length_group = case_when(
+      delay_at_census %in% 1:3     ~ "1-3 days",
+      delay_at_census %in% 4:14    ~ "4-14 days",
+      delay_at_census %in% 15:28   ~ "2-4 weeks",
+      delay_at_census %in% 29:42   ~ "4-6 weeks",
+      delay_at_census %in% 43:84   ~ "6-12 weeks",
+      delay_at_census %in% 85:182  ~ "3-6 months",
+      delay_at_census %in% 183:365 ~ "6-12 months",
+      delay_at_census > 365        ~ "12+ months",
+      census_flag == 0             ~ NA_character_
+    ),
     delay_over3days = (delay_at_census > 3) * 1,
-    delay_under2wks = (delay_at_census <= 14) * 1,
     delay_over2wks  = (delay_at_census > 14) * 1,
     delay_over4wks  = (delay_at_census > 28) * 1,
     delay_over6wks  = (delay_at_census > 42) * 1
@@ -207,25 +184,23 @@ scotland %<>%
   left_join(
     read_rds(here("lookups", "acute-hospitals.rds")) %>% 
       select(-hospname) %>%
-      mutate(acute = 1),
+      mutate(location_type = "acute"),
     by = c("location_code" = "hosp")
   ) %>%
-  replace_na(list(acute = 0)) %>%
-  mutate(
-    gpled = (acute == 0 & specialty_code == "E12") * 1,
-    notgpled = (acute == 0 & gpled == 0) * 1
-  )
+  mutate(location_type = case_when(
+    location_type == "acute" ~ "acute",
+    specialty_code == "E12" ~ "gpled",
+    TRUE ~ "notgpled"
+  )) %>%
+  relocate(location_type, .after = location_code)
 
 # Add discharged within month flag
 scotland %<>%
   mutate(disch_in_month = case_when(
     between(discharge_date, start_month, end_month) ~ 1,
     TRUE ~ 0
-  ))
-
-# Add patient count
-scotland %<>%
-  mutate(no_of_patients = 1)
+  ),
+  .after = discharge_reason)
 
 # Add weekdays
 scotland %<>%
