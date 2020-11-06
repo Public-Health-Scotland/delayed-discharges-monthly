@@ -13,7 +13,7 @@ read_clean_data <- function(filepath){
     stop(paste("File does not contain any rows of data:", filepath))
   }
   
-  data %>%
+  data %<>%
     
     rename_with(~ "health_board", matches(c("NHS Board", "Healthboard"))) %>%
     rename_with(~ "month", matches("monthflag")) %>%
@@ -75,5 +75,27 @@ read_clean_data <- function(filepath){
            specialty_code, delay_reason_1, delay_reason_2,
            admission_date, referral_date, ready_for_discharge_date,
            discharge_date, discharge_reason)
+  
+  # Display error if incorrect number or names of variables
+  if(ncol(data) != 17){
+    stop(paste("Incorrect number of variables in file. \n",
+               "Actual number:", ncol(data), "\n",
+               "Expected number: 17"))
+  }
+  
+  exp_names <-
+    c("month", "chi", "patient_postcode", "sex", "date_of_birth",
+      "health_board", "local_authority", "out_of_area", "location_code", 
+      "specialty_code", "delay_reason_1", "delay_reason_2", 
+      "admission_date", "referral_date", "ready_for_discharge_date",
+      "discharge_date", "discharge_reason")
+  
+  if(!all(names(data) %in% exp_names)){
+    stop(paste("At least one incorrect variable name. \n",
+               "Expected name(s):", setdiff(exp_names, names(data)), "\n",
+               "Actual name(s):", setdiff(names(data), exp_names)))
+  }
+  
+  data
   
 }
