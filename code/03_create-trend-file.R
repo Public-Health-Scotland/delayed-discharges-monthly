@@ -43,8 +43,8 @@ trend %<>%
 trend %<>%
   
   # Remove existing matched variables
-  select(-c(data_zone, hscp, locality, location_name,
-            health_board_code, local_authority_code)) %>%
+  select(-any_of(c("data_zone", "hscp", "locality", "location_name",
+                   "health_board_code", "local_authority_code"))) %>%
   
   # Match on new matched variables
   
