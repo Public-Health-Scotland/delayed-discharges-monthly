@@ -67,4 +67,14 @@ trend %<>%
   relocate(local_authority_code, .after = local_authority)
 
 
+### 4 - Save file ----
+
+write_rds(
+  trend,
+  here("trend", 
+       paste0(format(start_month, "%Y-%m"), "_trend.rds")),
+  compress = "gz"
+)
+
+
 ### END OF SCRIPT ###
