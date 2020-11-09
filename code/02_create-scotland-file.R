@@ -184,13 +184,13 @@ scotland %<>%
   left_join(
     read_rds(here("lookups", "acute-hospitals.rds")) %>% 
       select(-hospname) %>%
-      mutate(location_type = "acute"),
+      mutate(location_type = "Acute"),
     by = c("location_code" = "hosp")
   ) %>%
   mutate(location_type = case_when(
-    location_type == "acute" ~ "acute",
-    specialty_code == "E12" ~ "gpled",
-    TRUE ~ "notgpled"
+    location_type == "Acute" ~ "Acute",
+    specialty_code == "E12" ~ "GP Led",
+    TRUE ~ "Not GP Led"
   )) %>%
   relocate(location_type, .after = location_code)
 
