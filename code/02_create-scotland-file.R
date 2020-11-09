@@ -214,7 +214,7 @@ scotland %<>%
   mutate(
     fin_yr = fin_year(start_month),
     cal_yr = year(start_month),
-    cennum = census_number(start_month),
+    census_number = census_number(start_month),
     .before = everything()
   )
 
