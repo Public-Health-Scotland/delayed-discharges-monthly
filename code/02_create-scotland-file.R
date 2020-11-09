@@ -172,11 +172,7 @@ scotland %<>%
       delay_at_census %in% 183:365 ~ "6-12 months",
       delay_at_census > 365        ~ "12+ months",
       census_flag == 0             ~ NA_character_
-    ),
-    delay_over3days = (delay_at_census > 3) * 1,
-    delay_over2wks  = (delay_at_census > 14) * 1,
-    delay_over4wks  = (delay_at_census > 28) * 1,
-    delay_over6wks  = (delay_at_census > 42) * 1
+    )
   )
 
 # Add hospital type
