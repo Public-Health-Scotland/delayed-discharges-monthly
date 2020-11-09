@@ -47,7 +47,7 @@ read_clean_data <- function(filepath){
     clean_names() %>%
     
     # Trim white space from all character variables
-    mutate_if(is.character, ~ str_trim(., side = "both")) %>%
+    mutate(across(where(is.character), ~ str_trim(., side = "both"))) %>%
     
     # Remove leading zero from coded variables
     mutate(across(c(local_authority, delay_reason_1, delay_reason_2,
@@ -55,7 +55,7 @@ read_clean_data <- function(filepath){
                   ~ str_remove_all(., "^0*"))) %>%
     
     # Code all blanks as NA
-    mutate_all(na_if, "") %>%
+    mutate(across(everything(), ~ na_if(., ""))) %>%
     
     # Ensure all reason for delay codes upper case
     mutate(across(contains("delay_reason"), toupper)) %>%
