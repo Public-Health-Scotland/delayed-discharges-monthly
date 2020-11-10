@@ -10,8 +10,7 @@ trend/
 outputs/
 
 # Markdown output
-ISD-NATIONAL-STATS-REPORT.docx
-ISD-NATIONAL-STATS-SUMMARY.docx
+summary.docx
 
 # Images
 *.png
