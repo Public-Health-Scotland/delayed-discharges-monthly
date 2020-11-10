@@ -1,12 +1,14 @@
 ---
 output: 
   word_document:
-    reference_docx: "PHS-NatStats-SumTemplate.docx"
+    reference_docx: "templates/summary-template.docx"
     fig_caption: no
 ---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 source(here::here("code", "00_setup-environment.R"))
+
+walk(list.files(here("functions"), full.names = TRUE), source)
 
 trend <- read_rds(here("trend", 
                        paste0(format(end_month, "%Y-%m"), "_trend.rds"))) %>%
@@ -107,19 +109,16 @@ contact2 <- c("Name", "Role", "Number", "email")
 contact <- data.frame(contact1, contact2)
 ```
 
-<Div custom-style = "Publication Title"> <br> </Div>
-
-<Div custom-style = "Publication Title"> <br> </Div>
-
-<Div custom-style = "Publication Title">Insert publication title here</Div>
-<Div custom-style = "Publication subtitle">Subtitle</Div>
+<Div custom-style = "Publication Title">Delayed Discharges in</Div>
+<Div custom-style = "Publication Title">NHSScotland</Div>
+<Div custom-style = "Publication subtitle">Figures for `r format(start_month, "%B %Y")`</Div>
 <Div custom-style = "National stats">A National Statistics statistical release for Scotland</Div>
 
 <br>
 
-**Publication date: DD Month YYYY**
+**Publication date: `r format(pub_date(start_month), "%e %B %Y") %>% str_trim()`**
 
-<Div custom-style = "RestrictedStats">RESTRICTED STATISTICS: embargoed to 09:30 dd/mm/yyyy</Div>
+<Div custom-style = "RestrictedStats">RESTRICTED STATISTICS: embargoed to 09:30 `r format(pub_date(start_month), "%d/%m/%Y")`</Div>
 
 ### About this release
 Vestibulum lacinia, turpis eu sagittis lacinia, justo orci blandit orci, ut suscipit tortor turpis et metus. Pellentesque sollicitudin nisl et porttitor laoreet. Nunc id purus pretium, suscipit justo vitae, pretium dui. Quisque congue ex dignissim tellus pulvinar, a interdum libero fermentum.
