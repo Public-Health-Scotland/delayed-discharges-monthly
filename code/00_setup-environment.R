@@ -31,11 +31,13 @@ library(glue)         # For working with strings
 library(almanac)      # For working with recurring dates
 library(usethis)      # For creating new folders
 library(eeptools)     # For calculating age
+library(ggplot2)      # For creating charts
+library(flextable)    # For formatting tables in MS Word outputs
 
 
 ### 2 - Define month start date and derive end date ----
 
-start_month <- dmy(01062020)
+start_month <- dmy(01092020)
 
 end_month <- ceiling_date(start_month, "month") - days(1)
 
