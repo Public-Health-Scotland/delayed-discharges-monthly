@@ -32,7 +32,7 @@ library(almanac)      # For working with recurring dates
 library(usethis)      # For creating new folders
 library(eeptools)     # For calculating age
 library(ggplot2)      # For creating charts
-library(flextable)    # For formatting tables in MS Word outputs
+library(knitr)        # For creating tables in markdown
 
 
 ### 2 - Define month start date and derive end date ----

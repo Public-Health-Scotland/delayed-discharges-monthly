@@ -13,6 +13,10 @@ source(here::here("code", "00_setup-environment.R"))
 
 walk(list.files(here("functions"), full.names = TRUE), source)
 
+knit_hooks$set(inline = function(x){
+  if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
+})
+
 month_name <- format(start_month, "%B %Y")
 prev_month_name <- format(start_month - months(1), "%B %Y")
 
@@ -105,10 +109,11 @@ chart <-
 
 
 # Create contact information
-contact1 <- c("Lisa Reedie", "Principal Information Analyst", "0131 275 6117")
-contact2 <- c("Alice Byers", "Senior Information Analyst", "0131 314 1725")
+contact1 <- c("**Lisa Reedie**", "Principal Information Analyst", "0131 275 6117", 
+              "[phs.delayeddischarges@phs.scot](mailto:phs.delayeddischarges@phs.scot)")
+contact2 <- c("**Alice Byers**", "Senior Information Analyst", "0131 314 1725", "")
 
-contact <- data.frame(contact1, contact2)
+contact <- tibble(contact1, contact2)
 ```
 
 
@@ -156,19 +161,11 @@ It should be noted that figures presented in this publication are not directly c
 
 ### Contact
 
-```{r tab_contact, echo = FALSE, ft.align = "left"}
-flextable(contact, theme_fun = NULL) %>% 
-  delete_part(part = "header") %>%
-  bold(i = 1, part = "body") %>% 
-  align(align = "left", part = "body") %>% 
-  width(j = 1:2, width = 8.15 / 2.54) %>% 
-  padding(padding.top = 0, padding.bottom = 0)
+```{r tab_contact, echo = FALSE}
+suppressWarnings(kable(contact, col.names = NULL))
 ```
 
-
-[phs.delayeddischarges@phs.scot](mailto:phs.delayeddischarges@phs.scot)
-
-For all media enquires, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 07500 854 574.
+For all media enquiries, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 07500 854 574.
 
 ### Further Information
 Data from this publication, along with background information, glossary, and a metadata document, are available to download from our [web page](`r pub_date_url`) and the [Scottish Health and Social Care Open Data platform](https://www.opendata.nhs.scot/dataset/delayed-discharges-in-nhsscotland).
