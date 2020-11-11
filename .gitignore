@@ -7,7 +7,7 @@ odbc_connect.R
 # data folders #
 data/
 trend/
-outputs/
+output/
 
 # Markdown output
 summary.docx

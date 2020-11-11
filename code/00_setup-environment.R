@@ -25,7 +25,6 @@ library(janitor)      # For 'cleaning' variable names
 library(purrr)        # For functional programming
 library(readr)        # For reading files
 library(haven)        # For reading in SPSS files
-library(here)         # For the here() function
 library(phsmethods)   # For internal PHS functions
 library(magrittr)     # For the %<>%
 library(glue)         # For working with strings
@@ -35,6 +34,7 @@ library(eeptools)     # For calculating age
 library(ggplot2)      # For creating charts
 library(knitr)        # For creating tables in markdown
 library(forcats)      # For dealing with factors
+library(here)         # For the here() function
 
 
 ### 2 - Define month start date and derive end date ----
@@ -56,6 +56,9 @@ paste0("data/", format(start_month, "%Y-%m"), "/submitted/", boards) %>%
 
 # Create folder for trend files
 use_directory("trend")
+
+# Create folder for output
+use_directory(paste0("output/", format(start_month, "%Y-%m")))
 
 
 ### 4 - Define filepaths dependent on whether running on server or desktop ----
