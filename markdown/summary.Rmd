@@ -7,16 +7,19 @@ output:
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
-options(scipen = 999)
-
+# Load setup environment file and all functions
 source(here::here("code", "00_setup-environment.R"))
 
 walk(list.files(here("functions"), full.names = TRUE), source)
+
+# Set global options
+options(scipen = 999)
 
 knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
 
+# Derive various formats of month
 month_name <- format(start_month, "%B %Y")
 prev_month_name <- format(start_month - months(1), "%B %Y")
 
@@ -35,11 +38,13 @@ pub_date_url <-
          "health-and-social-care/delayed-discharges/",
          "delayed-discharges-in-nhsscotland-monthly/",
          str_replace_all(pub_date_full, " ", "-"))
-  
+
+# Read in trend file
 trend <- read_rds(here("trend", 
                        paste0(format(end_month, "%Y-%m"), "_trend.rds"))) %>%
   filter(delay_reason_1 != 100)
 
+# Get beddays data required for summary
 beddays <- 
   trend %>%
   filter(between(census_date, start_month - months(1), end_month)) %>%
@@ -54,6 +59,7 @@ prev_beddays <-
 
 beddays <- beddays %>% filter(census_date == max(census_date))
 
+# Get census data required for summary
 census <- 
   trend %>%
   filter(between(census_date, start_month - months(1), end_month) & 
@@ -76,6 +82,7 @@ census_over3 <-
   mutate(perc_total = census / sum(census) * 100,
          across(where(is.numeric), ~ round_half_up(., 0)))
 
+# Get data for chart and plot
 chart_data <- 
   trend %>%
   filter(between(census_date,
@@ -115,7 +122,12 @@ chart <-
     expand = c(0, 0)) +
   ylab(str_wrap("Average number of beds occupied per day", width = 8))
 
-# Save file to output folder
+# Save chart to output folder
+ggsave(here("output", format(start_month, "%Y-%m"), 
+            paste0(format(start_month, "%Y-%m"), "_summary-chart.png")), 
+       plot = chart,
+       width = 6.8, height = 3.5, 
+       device = "png", dpi = 600)
 
 # Chart alt text
 alt_text <- 
@@ -166,7 +178,7 @@ This release by Public Health Scotland (PHS) provides a monthly update on the nu
 
 <Div custom-style = "Chart Title">Delayed Discharge bed use in Scotland from `r format(start_month - months(24), "%B %Y")` to `r month_name`</Div>
 <Div custom-style = "Figure_Style">
-```{r fig-uptake, echo=FALSE, fig.width=6.8, fig.height = 3.5, fig.cap=alt_text}
+```{r fig-uptake, echo=FALSE, fig.width=6.8, fig.height=3.5, fig.cap=alt_text}
 chart
 ```
 </div>
