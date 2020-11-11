@@ -16,6 +16,7 @@
 
 ### 1 - Load packages ----
 
+library(plyr)         # For round_any function
 library(dplyr)        # For data manipulation in the "tidy" way
 library(tidyr)        # For data manipulation in the "tidy" way
 library(lubridate)    # For dealing with dates
@@ -33,11 +34,12 @@ library(usethis)      # For creating new folders
 library(eeptools)     # For calculating age
 library(ggplot2)      # For creating charts
 library(knitr)        # For creating tables in markdown
+library(forcats)      # For dealing with factors
 
 
 ### 2 - Define month start date and derive end date ----
 
-start_month <- dmy(01092020)
+start_month <- dmy(01072020)
 
 end_month <- ceiling_date(start_month, "month") - days(1)
 

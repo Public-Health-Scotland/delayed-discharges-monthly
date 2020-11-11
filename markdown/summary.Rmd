@@ -90,28 +90,47 @@ chart_data <-
 
 chart <-
   chart_data %>%
-  ggplot(aes(x = census_date, y = ave_bed_days, group = 1)) +
-  geom_line(color = "#004785") +
+  mutate(month = fct_relevel(as.factor(month), chart_data$month)) %>%
+  ggplot(aes(x = month, y = ave_bed_days, group = 1)) +
+  geom_line(color = "#3f3685", size = 1) +
+  geom_point(color = "#3f3685", size = 2) +
   theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        axis.title.y = element_text(size = 8, face = "bold", angle = 90),
-        axis.text = element_text(size = 8),
-        legend.title = element_blank(),
-        strip.text = element_blank(),
-        strip.background = element_blank()) +
-  #scale_x_discrete(labels = parse(text = sort(unique(basefile$fy)))) +
-  ylim(0, max(chart_data$ave_bed_days) + 50) +
-  geom_hline(aes(yintercept = -Inf)) + 
-  geom_vline(aes(xintercept = -Inf)) +
-  xlab("") + 
-  ylab("Average number of beds occupied per day")
+        panel.grid.major.y = element_line(color = "#d9d9d9"),
+        axis.title.y = element_text(size = 10, angle = 0, 
+                                    hjust = 0.5, vjust = 0.5),
+        axis.text = element_text(size = 10),
+        axis.text.x = 
+          element_text(
+            color = c("black", rep(c("transparent", "transparent", "black"), 8))),
+        axis.line = element_line(),
+        axis.title.x = element_blank()) +
+  scale_y_continuous(
+    limits = 
+      c(0, round_any(max(chart_data$ave_bed_days), 200, f = ceiling)),
+    breaks = 
+      seq(0, round_any(max(chart_data$ave_bed_days), 200, f = ceiling), 
+          by = 200),
+    expand = c(0, 0)) +
+  ylab(str_wrap("Average number of beds occupied per day", width = 8))
 
+# Save file to output folder
+
+# Chart alt text
+alt_text <- ""
 
 # Create contact information
-contact1 <- c("**Lisa Reedie**", "Principal Information Analyst", "0131 275 6117", 
-              "[phs.delayeddischarges@phs.scot](mailto:phs.delayeddischarges@phs.scot)")
-contact2 <- c("**Alice Byers**", "Senior Information Analyst", "0131 314 1725", "")
+contact1 <- 
+  c("**Lisa Reedie**", 
+    "Principal Information Analyst", 
+    "0131 275 6117",
+    "phs.delayeddischarges@phs.scot")
+contact2 <- 
+  c("**Alice Byers**", 
+    "Senior Information Analyst", 
+    "0131 314 1725",
+    "")
 
 contact <- tibble(contact1, contact2)
 ```
@@ -136,14 +155,18 @@ This release by Public Health Scotland (PHS) provides a monthly update on the nu
 
 * In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is an increase of `r beddays$perc_change`% compared to `r prev_month_name` when the daily average was `r prev_beddays`, but lower than the monthly average prior to COVID-19 measures being put in place.
 
+<br>
+
 <Div custom-style = "Chart Title">Delayed Discharge bed use in Scotland from `r format(start_month - months(24), "%B %Y")` to `r month_name`</Div>
 <Div custom-style = "Figure_Style">
-```{r fig-uptake, echo=FALSE, fig.width=6.15, fig.height=3, fig.cap="Appropriate ALT Text to be added."}
+```{r fig-uptake, echo=FALSE, fig.width=6.8, fig.height = 3.5, fig.cap=alt_text}
 chart
 ```
 </div>
 
-* At the `r month_name` census point, there were `r census$census` people delayed. This is an increase of `r census$perc_change` compared to the `r prev_month_name` census point when `r prev_census` people were delayed.
+<br>
+
+* At the `r month_name` census point, there were `r census$census` people delayed. This is an increase of `r census$perc_change`% compared to the `r prev_month_name` census point when `r prev_census` people were delayed.
 
 * Of those delayed at the `r month_name` census point, `r sum(census_over3$census)` were delayed more than three days with health and social care reasons accounting for `r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(perc_total)`%), complex needs accounting for `r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(perc_total)`%) and patient and family-related reasons for `r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(perc_total)`%).
 
@@ -161,9 +184,11 @@ It should be noted that figures presented in this publication are not directly c
 
 ### Contact
 
+<Div custom-style = "Normal-no-space">
 ```{r tab_contact, echo = FALSE}
 suppressWarnings(kable(contact, col.names = NULL))
 ```
+</Div>
 
 For all media enquiries, please email [phs.comms@phs.scot](mailto:phs.comms@phs.scot) or call 07500 854 574.
 
