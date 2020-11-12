@@ -59,6 +59,14 @@ prev_beddays <-
 
 beddays <- beddays %>% filter(census_date == max(census_date))
 
+beddays_change <- case_when(
+  beddays$perc_change > 1 ~ paste0("an increase of ", beddays$perc_change,
+                                   "% compared"),
+  beddays$perc_change < -1 ~ paste0("a decrease of ", beddays$perc_change,
+                                   "% compared"),
+  TRUE ~ "similar"
+)
+
 # Get census data required for summary
 census <- 
   trend %>%
@@ -72,6 +80,14 @@ census <-
 prev_census <- census %>% filter(census_date == min(census_date)) %>% pull(census)
 
 census <- census %>% filter(census_date == max(census_date))
+
+census_change <- case_when(
+  census$perc_change > 1 ~ paste0("an increase of ", census$perc_change,
+                                   "% compared"),
+  census$perc_change < -1 ~ paste0("a decrease of ", census$perc_change,
+                                   "% compared"),
+  TRUE ~ "similar"
+)
 
 census_over3 <-
   trend %>% 
@@ -172,7 +188,7 @@ This release by Public Health Scotland (PHS) provides a monthly update on the nu
 ### Main Points
 * In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed.
 
-* In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is an increase of `r beddays$perc_change`% compared to `r prev_month_name` when the daily average was `r prev_beddays`, but lower than the monthly average prior to COVID-19 measures being put in place.
+* In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r beddays_change` to `r prev_month_name` when the daily average was `r prev_beddays`, but lower than the monthly average prior to COVID-19 measures being put in place.
 
 <br>
 
@@ -185,7 +201,7 @@ chart
 
 <br>
 
-* At the `r month_name` census point, there were `r census$census` people delayed. This is an increase of `r census$perc_change`% compared to the `r prev_month_name` census point when `r prev_census` people were delayed.
+* At the `r month_name` census point, there were `r census$census` people delayed. This is `r census_change` to the `r prev_month_name` census point when `r prev_census` people were delayed.
 
 * Of those delayed at the `r month_name` census point, `r sum(census_over3$census)` were delayed more than three days with health and social care reasons accounting for `r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(perc_total)`%), complex needs accounting for `r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(perc_total)`%) and patient and family-related reasons for `r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(perc_total)`%).
 
