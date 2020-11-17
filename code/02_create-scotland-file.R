@@ -1,5 +1,5 @@
 #########################################################################
-# Name of file - 02_create_scotland_file.R
+# Name of file - 02_create-scotland-file.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
 # Orginal Date - July 2020
