@@ -67,6 +67,11 @@ beddays_change <- case_when(
   TRUE ~ "similar"
 )
 
+and_but <- case_when(
+  beddays$perc_change > 1 ~ "but",
+  TRUE ~ "and"
+)
+
 # Get census data required for summary
 census <- 
   trend %>%
@@ -188,7 +193,7 @@ This release by Public Health Scotland (PHS) provides a monthly update on the nu
 ### Main Points
 * In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed.
 
-* In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r beddays_change` to `r prev_month_name` when the daily average was `r prev_beddays`, but lower than the monthly average prior to COVID-19 measures being put in place.
+* In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r beddays_change` to `r prev_month_name` when the daily average was `r prev_beddays`, `r and_but` lower than the monthly average prior to COVID-19 measures being put in place.
 
 <br>
 
