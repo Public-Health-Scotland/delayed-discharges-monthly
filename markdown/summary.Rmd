@@ -62,7 +62,7 @@ beddays <- beddays %>% filter(census_date == max(census_date))
 beddays_change <- case_when(
   beddays$perc_change > 1 ~ paste0("an increase of ", beddays$perc_change,
                                    "% compared"),
-  beddays$perc_change < -1 ~ paste0("a decrease of ", beddays$perc_change,
+  beddays$perc_change < -1 ~ paste0("a decrease of ", abs(beddays$perc_change),
                                    "% compared"),
   TRUE ~ "similar"
 )
@@ -84,7 +84,7 @@ census <- census %>% filter(census_date == max(census_date))
 census_change <- case_when(
   census$perc_change > 1 ~ paste0("an increase of ", census$perc_change,
                                    "% compared"),
-  census$perc_change < -1 ~ paste0("a decrease of ", census$perc_change,
+  census$perc_change < -1 ~ paste0("a decrease of ", abs(census$perc_change),
                                    "% compared"),
   TRUE ~ "similar"
 )
