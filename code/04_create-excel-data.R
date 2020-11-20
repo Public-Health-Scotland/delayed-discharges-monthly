@@ -102,6 +102,84 @@ bed_days_la <-
 
 ### 3 - Create census data sheet ----
 
+census_scot <-
+  
+  trend %>%
+  
+  # Select current month only
+  filter(between(census_date, start_month, end_month)) %>%
+  
+  filter(census_flag == 1) %>%
+  mutate(delay_reason = case_when(
+    delay_reason_1 == 9 ~ delay_reason_2,
+    TRUE ~ delay_reason_1
+  )) %>%
+  group_by(fin_yr, month, age_group, delay_reason, reason_group_1,
+           reason_group_2, delay_length_group, location_type) %>%
+  summarise(
+    level = 1,
+    areaname = "Scotland",
+    census_delays = sum(census_flag),
+    .groups = "drop"
+  ) %>%
+  
+  # Add 'All' ages
+  group_by(fin_yr, month, level, areaname, delay_reason, reason_group_1,
+           reason_group_2, delay_length_group, location_type) %>%
+  group_modify(
+    ~ bind_rows(.x,
+                summarise(.x,
+                          age_group = "All",
+                          census_delays = sum(census_delays)))
+  ) %>%
+  ungroup() %>%
+  
+  pivot_longer(
+    cols = delay_reason:reason_group_2,
+    names_to = "reason_breakdown",
+    values_to = "delay_reason"
+  ) %>%
+  
+  # Remove age breakdown for reason codes
+  filter(!(age_group != "All" & reason_breakdown == "delay_reason")) %>%
+  
+  group_by(across(-census_delays)) %>%
+  summarise(census_delays = sum(census_delays), .groups = "drop") %>%
+  
+  group_by(across(fin_yr:age_group)) %>%
+  group_modify(
+    ~ bind_rows(.x,
+                summarise(.x %>% filter(reason_breakdown == "reason_group_1"),
+                          delay_reason = "All",
+                          census_delays = sum(census_delays))
+    )
+  ) %>%
+  
+  group_modify(
+    ~ bind_rows(.x,
+                summarise(.x %>% filter(reason_breakdown == "reason_group_1" &
+                                          delay_reason != "Code 9"),
+                          delay_reason = "Standard",
+                          census_delays = sum(census_delays))
+    )
+  ) %>%
+  ungroup() %>%
+  
+  pivot_wider(names_from = delay_length_group,
+              values_from = census_delays) %>%
+  
+  mutate(across(`1-3 days`:`6-12 weeks`, ~ replace_na(., 0))) %>%
+  mutate(census_delays = reduce(select(., `1-3 days`:`6-12 weeks`), `+`)) %>%
+  pivot_wider(names_from = location_type,
+              values_from = census_delays) %>%
+  
+  mutate(across(`1-3 days`:`6-12 weeks`, ~ replace_na(., 0))) %>%
+  mutate(census_delays = reduce(select(., `1-3 days`:`6-12 weeks`), `+`)) %>%
+  group_by(across(c(!where(is.numeric), level))) %>%
+  summarise(across(where(is.numeric), ~ sum(., na.rm = TRUE)),
+            .groups = "drop") %>%
+  ungroup() %>%
+  relocate(level, .before = areaname)
 
 
 ### 4 - Save data sheets ----
