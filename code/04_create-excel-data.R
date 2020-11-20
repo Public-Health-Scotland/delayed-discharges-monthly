@@ -17,13 +17,87 @@
 source(here::here("code", "00_setup-environment.R"))
 
 
-### 1 - Read in trend file ----
+### 1 - Read in trend file and remove Code 100's ----
 
 trend <-
   read_rds(
     here("trend", 
          paste0(format(start_month, "%Y-%m"), "_trend.rds"))
-  )
+  ) %>%
+  filter(delay_reason_1 != 100)
+
+
+### 2 - Create Bed Days data sheets ----
+
+bed_days <-
+  
+  trend %>%
+  
+  # Select current month only
+  filter(between(census_date, start_month, end_month)) %>%
+
+  # Aggregate by required breakdowns
+  group_by(health_board, local_authority, age_group, reason_group_1) %>%
+  summarise(bed_days = sum(bed_days), .groups = "drop") %>%
+  
+  # Add Scotland rows
+  group_by(age_group, reason_group_1) %>%
+  group_modify(
+    ~ bind_rows(.x,
+                summarise(.x,
+                          health_board = "Scotland",
+                          bed_days = sum(bed_days)))
+  ) %>%
+  
+  # Add All Ages rows
+  group_by(health_board, local_authority, reason_group_1) %>%
+  group_modify(
+    ~ bind_rows(.x,
+                summarise(.x,
+                          age_group = "All",
+                          bed_days = sum(bed_days)))
+  ) %>%
+  
+  # Add All reason rows
+  group_by(health_board, local_authority, age_group) %>%
+  group_modify(
+    ~ bind_rows(.x,
+                summarise(.x,
+                          reason_group_1 = "All",
+                          bed_days = sum(bed_days)))
+  ) %>%
+  
+  # Add 'Standard' reason rows
+  group_by(health_board, local_authority, age_group) %>%
+  group_modify(
+    ~ bind_rows(.x,
+                summarise(.x %>% filter(!reason_group_1 %in% c("All", "Code 9")),
+                          reason_group_1 = "Standard",
+                          bed_days = sum(bed_days)))
+  ) %>%
+  
+  # Complete rows for all breakdowns
+  ungroup() %>%
+  complete(health_board = c(unique(trend$health_board), "Scotland"),
+           local_authority = unique(trend$local_authority),
+           age_group = c(unique(trend$age_group), "All"),
+           reason_group_1 = c(unique(trend$reason_group_1), "All", "Standard"),
+           fill = list(bed_days = 0)) %>%
+  
+  mutate(across(health_board, ~ str_remove(., "NHS ")))
+
+# Health Board data sheet
+bed_days_hb <-
+  bed_days %>%
+  group_by(health_board, age_group, reason_group_1) %>%
+  summarise(bed_days = sum(bed_days), .groups = "drop")
+
+# Local Authority data sheet
+bed_days_la <-
+  bed_days %>%
+  filter(!is.na(local_authority)) %>%
+  group_by(local_authority, age_group, reason_group_1) %>%
+  summarise(bed_days = sum(bed_days), .groups = "drop")
 
 
 ### END OF SCRIPT ###
