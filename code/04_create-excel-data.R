@@ -100,4 +100,23 @@ bed_days_la <-
   summarise(bed_days = sum(bed_days), .groups = "drop")
 
 
+### 3 - Create census data sheet ----
+
+
+
+### 4 - Save data sheets ----
+
+write_csv(
+  bed_days_hb,
+  here("output", format(start_month, "%Y-%m"),
+       paste0(format(start_month, "%Y-%m"), "_bed-days-hb.csv"))
+)
+
+write_csv(
+  bed_days_la,
+  here("output", format(start_month, "%Y-%m"),
+       paste0(format(start_month, "%Y-%m"), "_bed-days-la.csv"))
+)
+
+
 ### END OF SCRIPT ###
