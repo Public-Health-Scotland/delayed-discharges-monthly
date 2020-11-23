@@ -140,7 +140,7 @@ scotland %<>%
 
 # Add census flag
 scotland %<>%
-  mutate(census_date = census_date(start_month), .before = everything()) %>%
+  mutate(census_date = census_date(start_month), .after = month) %>%
   mutate(
     census_flag = case_when(
       delay_reason_2 %in% c("26X", "46X") ~ 0,
@@ -210,9 +210,10 @@ scotland %<>%
   mutate(
     fin_yr = fin_year(start_month),
     cal_yr = year(start_month),
-    census_number = census_number(start_month),
     .before = everything()
-  )
+  ) %>%
+  mutate(census_number = census_number(start_month), .before = census_date) %>%
+  mutate(start_month = start_month, .after = month)
 
 
 ### 5 - Save file ----
