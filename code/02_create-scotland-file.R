@@ -213,7 +213,7 @@ scotland %<>%
     .before = everything()
   ) %>%
   mutate(census_number = census_number(start_month), .before = census_date) %>%
-  mutate(start_month = start_month, .after = month)
+  mutate(month_date = start_month, .after = month)
 
 
 ### 5 - Save file ----
