@@ -22,6 +22,7 @@ knit_hooks$set(inline = function(x){
 # Derive various formats of month
 month_name <- format(start_month, "%B %Y")
 prev_month_name <- format(start_month - months(1), "%B %Y")
+prev_year_name <- format(start_month - years(1), "%B %Y")
 
 pub_date_full <- 
   pub_date(start_month) %>%
@@ -45,31 +46,47 @@ trend <- read_rds(here("trend",
   filter(delay_reason_1 != 100)
 
 # Get beddays data required for summary
-beddays <- 
+beddays <-
   trend %>%
-  filter(between(census_date, start_month - months(1), end_month)) %>%
-  group_by(census_date, month) %>%
+  filter(month_date %in% c(start_month,
+                           start_month - months(1),
+                           start_month - years(1))) %>%
+  group_by(month_date) %>%
   summarise(bed_days = sum(bed_days), .groups = "drop") %>%
-  mutate(ave_bed_days = bed_days / days_in_month(census_date),
-         perc_change = (ave_bed_days - lag(ave_bed_days)) / lag(ave_bed_days) * 100,
+  mutate(ave_bed_days = bed_days / days_in_month(month_date),
          across(where(is.numeric), ~ round_half_up(., 0)))
 
-prev_beddays <- 
-  beddays %>% filter(census_date == min(census_date)) %>% pull(ave_bed_days)
+prev_month_bd <- 
+  beddays %>% filter(month_date == start_month - months(1)) %>% pull(ave_bed_days)
 
-beddays <- beddays %>% filter(census_date == max(census_date))
+prev_year_bd <- 
+  beddays %>% filter(month_date == start_month - years(1)) %>% pull(bed_days)
 
-beddays_change <- case_when(
-  beddays$perc_change > 1 ~ paste0("an increase of ", beddays$perc_change,
+beddays %<>% 
+  filter(month_date == start_month) %>%
+  mutate(month_change = ((ave_bed_days - prev_month_bd) / prev_month_bd) * 100,
+         year_change = ((bed_days - prev_year_bd) / prev_year_bd) * 100,
+         across(where(is.numeric), ~ round_half_up(., 0)))
+
+month_change_text <- case_when(
+  beddays$month_change > 1 ~ paste0("an increase of ", beddays$month_change,
                                    "% compared"),
-  beddays$perc_change < -1 ~ paste0("a decrease of ", abs(beddays$perc_change),
+  beddays$month_change < -1 ~ paste0("a decrease of ", abs(beddays$month_change),
                                    "% compared"),
   TRUE ~ "similar"
 )
 
 and_but <- case_when(
-  beddays$perc_change > 1 ~ "but",
+  beddays$month_change > 1 ~ "but",
   TRUE ~ "and"
+)
+
+year_change_text <- case_when(
+  beddays$year_change > 1 ~ paste0("an increase of ", beddays$year_change,
+                                   "% compared"),
+  beddays$year_change < -1 ~ paste0("a decrease of ", abs(beddays$year_change),
+                                   "% compared"),
+  TRUE ~ "similar"
 )
 
 # Get census data required for summary
@@ -191,9 +208,9 @@ contact <- tibble(contact1, contact2)
 This release by Public Health Scotland (PHS) provides a monthly update on the number of hospital bed days associated with delayed discharges and the number of discharges from hospital that followed a period of delay. Information is also provided on the number of people experiencing a delay in discharge from hospital at the monthly census point. The data relate to people aged 18 years and over who were clinically ready for discharge. Delayed discharge figures in NHSScotland have been affected by measures put in place to respond to COVID-19.
 
 ### Main Points
-* In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed.
+* In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed. This is `r year_change_text` with the number of delayed days spent in hospital in `r prev_year_name` (`r prev_year_bd`).
 
-* In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r beddays_change` to `r prev_month_name` when the daily average was `r prev_beddays`, `r and_but` lower than the monthly average prior to COVID-19 measures being put in place.
+* In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r month_change_text` to `r prev_month_name` when the daily average was `r prev_month_bd`, `r and_but` lower than the monthly average prior to COVID-19 measures being put in place.
 
 <br>
 
