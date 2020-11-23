@@ -114,7 +114,7 @@ hb_lookup <- function(){
   paste0("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-",
          "d6e17229cc7b/resource/652ff726-e676-4a20-abda-435b98dd7bdc/",
          "download/hb14_hb19.csv") %>%
-    read_csv() %>%
+    {suppressMessages(read_csv(.))} %>%
     clean_names() %>%
     filter(is.na(hb_date_archived)) %>%
     mutate(hb_name = str_replace(hb_name, " and ", " & ")) %>%
@@ -126,7 +126,7 @@ la_lookup <- function(){
   paste0("https://www.opendata.nhs.scot/dataset/9f942fdb-e59e-44f5-b534-",
            "d6e17229cc7b/resource/967937c4-8d67-4f39-974f-fd58c4acfda5/",
            "download/ca11_ca19.csv") %>%
-    read_csv() %>%
+    {suppressMessages(read_csv(.))} %>%
     clean_names() %>%
     filter(is.na(ca_date_archived)) %>%
     mutate(ca_name = case_when(
