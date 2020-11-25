@@ -1,3 +1,18 @@
+#########################################################################
+# Name of file - read_clean_data.R
+# Data release - Monthly Delayed Discharges publication
+# Original Authors - Alice Byers
+# Orginal Date - July 2020
+#
+# Type - Reproducible Analytical Pipeline (RAP)
+# Written/run on - RStudio Server
+# Version of R - 3.6.1
+#
+# Description - Function to read in health board data from csv file and
+#               standardise variable names and formatting
+#########################################################################
+
+
 read_clean_data <- function(filepath){
   
   if(!file.exists(filepath)){
@@ -15,6 +30,7 @@ read_clean_data <- function(filepath){
   
   data %<>%
     
+    # Standardise variable names
     rename_with(~ "health_board", matches(c("NHS Board", "Healthboard"))) %>%
     rename_with(~ "month", matches("monthflag")) %>%
     rename_with(~ "location_code", 
@@ -99,3 +115,6 @@ read_clean_data <- function(filepath){
   data
   
 }
+
+
+### END OF SCRIPT ###

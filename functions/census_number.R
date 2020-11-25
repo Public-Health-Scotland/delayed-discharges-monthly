@@ -1,3 +1,17 @@
+#########################################################################
+# Name of file - census_number.R
+# Data release - Monthly Delayed Discharges publication
+# Original Authors - Alice Byers
+# Orginal Date - July 2020
+#
+# Type - Reproducible Analytical Pipeline (RAP)
+# Written/run on - RStudio Server
+# Version of R - 3.6.1
+#
+# Description - Function to derive census number
+#########################################################################
+
+
 census_number <- function(start_month){
   
   if(!lubridate::is.Date(start_month)){
@@ -14,3 +28,6 @@ census_number <- function(start_month){
   ) + 128
   
 }
+
+
+### END OF SCRIPT ###
