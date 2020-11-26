@@ -143,43 +143,69 @@ census_scot <-
   # Remove age breakdown for reason codes
   filter(!(age_group != "All" & reason_breakdown == "delay_reason")) %>%
   
-  group_by(across(-census_delays)) %>%
-  summarise(census_delays = sum(census_delays), .groups = "drop") %>%
-  
+  # Add All reasons breakdown
   group_by(across(fin_yr:age_group)) %>%
   group_modify(
     ~ bind_rows(.x,
                 summarise(.x %>% filter(reason_breakdown == "reason_group_1"),
+                          reason_breakdown = "reason_group_1",
                           delay_reason = "All",
                           census_delays = sum(census_delays))
     )
   ) %>%
   
+  # Add Standard reasons breakdown
   group_modify(
     ~ bind_rows(.x,
                 summarise(.x %>% filter(reason_breakdown == "reason_group_1" &
                                           delay_reason != "Code 9"),
+                          reason_breakdown = "reason_group_1",
                           delay_reason = "Standard",
                           census_delays = sum(census_delays))
     )
   ) %>%
   ungroup() %>%
   
-  pivot_wider(names_from = delay_length_group,
-              values_from = census_delays) %>%
+  # Aggregate
+  group_by(across(-census_delays)) %>%
+  summarise(census_delays = sum(census_delays), .groups = "drop") %>%
   
-  mutate(across(`1-3 days`:`6-12 weeks`, ~ replace_na(., 0))) %>%
-  mutate(census_delays = reduce(select(., `1-3 days`:`6-12 weeks`), `+`)) %>%
-  pivot_wider(names_from = location_type,
-              values_from = census_delays) %>%
+  # Add columns for delay length groupings
+  pivot_wider(names_from = delay_length_group, 
+              values_from = census_delays,
+              values_fill = list(census_delays = 0))%>%
+  mutate(census_delays = rowSums(select(., -c(fin_yr:delay_reason)))) %>%
   
-  mutate(across(`1-3 days`:`6-12 weeks`, ~ replace_na(., 0))) %>%
-  mutate(census_delays = reduce(select(., `1-3 days`:`6-12 weeks`), `+`)) %>%
-  group_by(across(c(!where(is.numeric), level))) %>%
-  summarise(across(where(is.numeric), ~ sum(., na.rm = TRUE)),
-            .groups = "drop") %>%
+  # Calculate total delays in across all location types
+  group_by(across(c(fin_yr:delay_reason, -location_type, census_delays))) %>%
+  mutate(across(matches("^[1-9]"), sum)) %>%
   ungroup() %>%
-  relocate(level, .before = areaname)
+  
+  # Add columns for location type
+  pivot_wider(names_from = location_type,
+              values_from = census_delays,
+              values_fill = list(census_delays = 0)) %>%
+  mutate(census_delays = rowSums(select(., Acute:`Not GP Led`)), 
+         .after = delay_reason) %>%
+  
+  # Final aggregate
+  group_by(across(c(!where(is.numeric), level))) %>%
+  summarise(across(where(is.numeric), sum), .groups = "drop") %>%
+  
+  # Add extra delay length breakdowns
+  rowwise() %>%
+  mutate(
+    DelayOver3days = sum(`4-14 days`, `2-4 weeks`, `4-6 weeks`, `6-12 weeks`, 
+                         `3-6 months`, `6-12 months`, `12+ months`),
+    DelayUnder2wks = sum(`1-3 days`, `4-14 days`),
+    DelayOver6wks  = sum(`6-12 weeks`, `3-6 months`, `6-12 months`, 
+                         `12+ months`),
+    DelayOver4wks  = sum(`4-6 weeks`, `6-12 weeks`, `3-6 months`, `6-12 months`, 
+                         `12+ months`),
+    DelayOver2wks  = sum(`2-4 weeks`, `4-6 weeks`, `6-12 weeks`, `3-6 months`, 
+                         `6-12 months`, `12+ months`)
+  ) %>%
+  ungroup()
 
 
 ### 4 - Save data sheets ----
