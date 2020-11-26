@@ -158,7 +158,7 @@ census_scot <-
   group_modify(
     ~ bind_rows(.x,
                 summarise(.x %>% filter(reason_breakdown == "reason_group_1" &
-                                          delay_reason != "Code 9"),
+                                        !delay_reason %in% c("All", "Code 9")),
                           reason_breakdown = "reason_group_1",
                           delay_reason = "Standard",
                           census_delays = sum(census_delays))
@@ -205,7 +205,26 @@ census_scot <-
     DelayOver2wks  = sum(`2-4 weeks`, `4-6 weeks`, `6-12 weeks`, `3-6 months`, 
                          `6-12 months`, `12+ months`)
   ) %>%
-  ungroup()
+  ungroup() %>%
+  
+  # Set some breakdowns to zero where not required
+  mutate(
+    across(c(Acute:`Not GP Led`), 
+           ~ case_when(
+             reason_breakdown == "reason_group_1" & age_group == "All" ~ .,
+             TRUE ~ 0
+           )),
+    across(matches("^[1-9]"),
+           ~ case_when(
+             reason_breakdown == "reason_group_1" ~ .,
+             TRUE ~ 0
+           )),
+    across(matches("^Delay", ignore.case = FALSE),
+           ~ case_when(
+             reason_breakdown == "reason_group_1" | age_group == "All" ~ .,
+             TRUE ~ 0
+           ))
+  )
 
 
 ### 4 - Save data sheets ----
