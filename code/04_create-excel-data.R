@@ -207,14 +207,14 @@ census_scot <-
   ) %>%
   ungroup() %>%
   
-  # Set some breakdowns to zero where not required
+  # Set some breakdowns to zero where too low level for publication
   mutate(
     across(c(Acute:`Not GP Led`), 
            ~ case_when(
              reason_breakdown == "reason_group_1" & age_group == "All" ~ .,
              TRUE ~ 0
            )),
-    across(matches("^[1-9]"),
+    across(c(matches("^[1-9]"), DelayUnder2wks),
            ~ case_when(
              reason_breakdown == "reason_group_1" ~ .,
              TRUE ~ 0
@@ -223,6 +223,11 @@ census_scot <-
            ~ case_when(
              reason_breakdown == "reason_group_1" | age_group == "All" ~ .,
              TRUE ~ 0
+           )),
+    across(c(`6-12 weeks`, `3-6 months`, `6-12 months`, `12+ months`),
+           ~ case_when(
+             delay_reason != "All" ~ 0,
+             TRUE ~ .
            ))
   )
 
