@@ -106,10 +106,11 @@ census_scot <-
   
   trend %>%
   
-  # Select current month only
+  # Select census records in current month only
   filter(between(census_date, start_month, end_month)) %>%
-  
   filter(census_flag == 1) %>%
+  
+  # Aggregate to Scotland level
   mutate(delay_reason = case_when(
     delay_reason_1 == 9 ~ delay_reason_2,
     TRUE ~ delay_reason_1
@@ -123,9 +124,51 @@ census_scot <-
     .groups = "drop"
   ) %>%
   
+  # Restructure to get rows for various delay reason breakdowns
+  pivot_longer(
+    cols = delay_reason:reason_group_2,
+    names_to = "reason_breakdown",
+    values_to = "delay_reason"
+  )
+
+census_hb_la <-
+  
+  trend %>%
+  
+  # Select census records in current month only
+  filter(between(census_date, start_month, end_month)) %>%
+  filter(census_flag == 1) %>%
+  
+  # Restructure and aggregate to HB/LA level
+  pivot_longer(
+    cols = c(health_board, local_authority),
+    names_to = "level",
+    values_to = "areaname"
+  ) %>%
+  group_by(fin_yr, month, level, areaname, age_group, 
+           reason_group_1, reason_group_2,
+           delay_length_group, location_type) %>%
+  summarise(census_delays = sum(census_flag), .groups = "drop") %>%
+  mutate(level = case_when(
+    level == "health_board" ~ 2,
+    level == "local_authority" ~ 3
+  )) %>%
+  
+  # Restructure to get rows for various delay reason breakdowns
+  pivot_longer(
+    cols = reason_group_1:reason_group_2,
+    names_to = "reason_breakdown",
+    values_to = "delay_reason"
+  )
+
+census <-
+  
+  # Join Scotland/HB/LA rows
+  bind_rows(census_scot, census_hb_la) %>%
+  
   # Add 'All' ages
-  group_by(fin_yr, month, level, areaname, delay_reason, reason_group_1,
-           reason_group_2, delay_length_group, location_type) %>%
+  group_by(fin_yr, month, level, areaname, reason_breakdown, delay_reason,
+           delay_length_group, location_type) %>%
   group_modify(
     ~ bind_rows(.x,
                 summarise(.x,
@@ -134,17 +177,12 @@ census_scot <-
   ) %>%
   ungroup() %>%
   
-  pivot_longer(
-    cols = delay_reason:reason_group_2,
-    names_to = "reason_breakdown",
-    values_to = "delay_reason"
-  ) %>%
-  
   # Remove age breakdown for reason codes
   filter(!(age_group != "All" & reason_breakdown == "delay_reason")) %>%
   
   # Add All reasons breakdown
-  group_by(across(fin_yr:age_group)) %>%
+  group_by(fin_yr, month, level, areaname, delay_length_group,
+           location_type, age_group) %>%
   group_modify(
     ~ bind_rows(.x,
                 summarise(.x %>% filter(reason_breakdown == "reason_group_1"),
@@ -158,9 +196,9 @@ census_scot <-
   group_modify(
     ~ bind_rows(.x,
                 summarise(.x %>% filter(reason_breakdown == "reason_group_1" &
-                                        !delay_reason %in% c("All", "Code 9")),
+                                          !delay_reason %in% c("All", "Code 9")),
                           reason_breakdown = "reason_group_1",
-                          delay_reason = "Standard",
+                          delay_reason = "All Delays excl. Code 9",
                           census_delays = sum(census_delays))
     )
   ) %>%
@@ -176,7 +214,7 @@ census_scot <-
               values_fill = list(census_delays = 0))%>%
   mutate(census_delays = rowSums(select(., -c(fin_yr:delay_reason)))) %>%
   
-  # Calculate total delays in across all location types
+  # Calculate total delays across all location types
   group_by(across(c(fin_yr:delay_reason, -location_type, census_delays))) %>%
   mutate(across(matches("^[1-9]"), sum)) %>%
   ungroup() %>%
@@ -187,10 +225,6 @@ census_scot <-
               values_fill = list(census_delays = 0)) %>%
   mutate(census_delays = rowSums(select(., Acute:`Not GP Led`)), 
          .after = delay_reason) %>%
-  
-  # Final aggregate
-  group_by(across(c(!where(is.numeric), level))) %>%
-  summarise(across(where(is.numeric), sum), .groups = "drop") %>%
   
   # Add extra delay length breakdowns
   rowwise() %>%
@@ -229,7 +263,50 @@ census_scot <-
              delay_reason != "All" ~ 0,
              TRUE ~ .
            ))
-  )
+  ) %>%
+  
+  # Recoding to match SPSS output
+  mutate(
+    fin_yr = str_replace(fin_yr, "/", "-"),
+    month_year = month,
+    month = word(month),
+    delay_reason = case_when(
+      delay_reason == "Assessment" ~ "H&SC - Community Care Assessment",
+      delay_reason %in% c("Care Arrangements", "Place Availability") ~ 
+        paste0("H&SC - ", delay_reason),
+      str_starts(delay_reason, "Patient/") ~ 
+        str_replace(delay_reason, "Reasons", "reasons"),
+      delay_reason %in% c("Disagreements", "Legal/Financial", "Other") ~
+        paste0("Patient/Carer/Family-related reasons: ", delay_reason),
+      str_starts(delay_reason, "Other Code 9") ~ 
+        "Other code 9 reasons (not AWI)",
+      TRUE ~ delay_reason
+    )
+  ) %>%
+  
+  rename_with(
+    ~ paste0("Delay", str_replace(word(.), "-", "to"), word(., 2)),
+    matches("^[1-9]")
+  ) %>%
+  rename_with(
+    ~ tolower(str_replace_all(., " ", "")),
+    Acute:`Not GP Led`
+  ) %>%
+  rename(DelayOver12months = `Delay12+months`) %>%
+  
+  # Remove rows with no delays
+  filter(census_delays != 0) %>%
+  
+  # Final aggregate
+  group_by(across(c(!where(is.numeric), level))) %>%
+  summarise(across(where(is.numeric), sum), .groups = "drop") %>%
+  
+  # Reorder columns
+  select(fin_yr, month, month_year, level, areaname, age_group, delay_reason,
+         census_delays, Delay1to3days, Delay4to14days, Delay2to4weeks,
+         Delay4to6weeks, Delay6to12weeks, Delay3to6months, Delay6to12months,
+         DelayOver12months, DelayOver3days, DelayUnder2wks, DelayOver6wks,
+         DelayOver4wks, DelayOver2wks, acute, gpled, notgpled)
 
 
 ### 4 - Save data sheets ----
@@ -244,6 +321,12 @@ write_csv(
   bed_days_la,
   here("output", format(start_month, "%Y-%m"),
        paste0(format(start_month, "%Y-%m"), "_bed-days-la.csv"))
+)
+
+write_csv(
+  census,
+  here("output", format(start_month, "%Y-%m"),
+       paste0(format(start_month, "%Y-%m"), "_census.csv"))
 )
 
 
