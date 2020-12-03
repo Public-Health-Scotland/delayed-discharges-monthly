@@ -76,5 +76,12 @@ write_rds(
   compress = "gz"
 )
 
+write_csv(
+  trend,
+    here("trend", 
+         paste0(format(start_month, "%Y-%m"), "_trend.csv"))
+  )
+)
+
 
 ### END OF SCRIPT ###
