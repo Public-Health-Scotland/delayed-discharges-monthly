@@ -151,6 +151,19 @@ scotland %<>%
     )
   )
 
+# Add census flag for 26X/46X only
+scotland %<>%
+  mutate(
+    census_flag_26X_46X = case_when(
+      delay_reason_2 %in% c("26X", "46X") &
+        ready_for_discharge_date < census_date & is.na(discharge_date) ~ 1,
+      delay_reason_2 %in% c("26X", "46X") &
+        ready_for_discharge_date < census_date & 
+        discharge_date >= census_date ~ 1,
+      TRUE ~ 0
+    )
+  )
+
 # Calulcate length of delay at census
 scotland %<>%
   mutate(delay_at_census = case_when(
