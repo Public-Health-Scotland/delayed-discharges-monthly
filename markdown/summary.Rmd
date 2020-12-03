@@ -19,6 +19,11 @@ knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
 
+# Function to round to next highest hundred - used in ggplot
+next_200 <- function(x){
+  ceiling(x / 200) * 200
+}
+
 # Derive various formats of month
 month_name <- format(start_month, "%B %Y")
 prev_month_name <- format(start_month - months(1), "%B %Y")
@@ -153,9 +158,9 @@ chart <-
         axis.title.x = element_blank()) +
   scale_y_continuous(
     limits = 
-      c(0, round_any(max(chart_data$ave_bed_days), 200, f = ceiling)),
+      c(0, next_200(max(chart_data$ave_bed_days))),
     breaks = 
-      seq(0, round_any(max(chart_data$ave_bed_days), 200, f = ceiling), 
+      seq(0, next_200(max(chart_data$ave_bed_days)), 
           by = 200),
     expand = c(0, 0)) +
   ylab(str_wrap("Average number of beds occupied per day", width = 8))

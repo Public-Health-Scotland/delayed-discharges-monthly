@@ -16,7 +16,6 @@
 
 ### 1 - Load packages ----
 
-library(plyr)         # For round_any function
 library(dplyr)        # For data manipulation in the "tidy" way
 library(tidyr)        # For data manipulation in the "tidy" way
 library(lubridate)    # For dealing with dates
