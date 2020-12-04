@@ -100,10 +100,9 @@ if("archive.zip" %in% list.files(here("trend"))){
 
 # Delete file from main folder
 unlink(
-  c(here("trend", 
-         paste0(format(start_month - months(1), "%Y-%m"), "_trend.rds")),
-    here("trend", 
-         paste0(format(start_month - months(1), "%Y-%m"), "_trend.csv")))
+  here("trend", 
+       paste0(format(start_month - months(1), "%Y-%m"), 
+              "_trend", c(".rds", ".csv")))
 )
 
 
