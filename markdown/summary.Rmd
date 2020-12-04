@@ -167,7 +167,7 @@ chart <-
 
 # Save chart to output folder
 ggsave(here("output", format(start_month, "%Y-%m"), 
-            paste0(format(start_month, "%Y-%m"), "_summary-chart.png")), 
+            paste0(format(start_month, "%Y-%m"), "_twitter-chart.png")), 
        plot = chart,
        width = 6.8, height = 3.5, 
        device = "png", dpi = 600)
