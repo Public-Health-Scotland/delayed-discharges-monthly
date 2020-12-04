@@ -50,6 +50,12 @@ archive_data <- function(fy){
     here::here("data", months_to_archive)
   )
   
+  # Double check folders have been archived successfully before deleting
+  if(any(!paste0(months_to_archive, "/") %in% 
+         zip::zip_list(here::here("data", fy_folder))$filename)){
+    stop("At least one month folder has not archived successfully.")
+  }
+  
   # Delete folders that have been archived
   unlink(here::here("data", months_to_archive), recursive = TRUE)
   
