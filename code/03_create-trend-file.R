@@ -80,7 +80,30 @@ write_csv(
   trend,
     here("trend", 
          paste0(format(start_month, "%Y-%m"), "_trend.csv"))
-  )
+)
+
+
+### 5 - Archive previous months trend file ----
+
+# Save file to archive.zip
+if("archive.zip" %in% list.files(here("trend"))){
+  zipr_append(
+    here("trend", "archive.zip"),
+    here("trend", 
+         paste0(format(start_month - months(1), "%Y-%m"), "_trend.rds")))
+}else{
+  zipr(
+    here("trend", "archive.zip"),
+    here("trend", 
+         paste0(format(start_month - months(1), "%Y-%m"), "_trend.rds")))
+}
+
+# Delete file from main folder
+unlink(
+  c(here("trend", 
+         paste0(format(start_month - months(1), "%Y-%m"), "_trend.rds")),
+    here("trend", 
+         paste0(format(start_month - months(1), "%Y-%m"), "_trend.csv")))
 )
 
 

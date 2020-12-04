@@ -35,6 +35,7 @@ library(knitr)        # For creating tables in markdown
 library(forcats)      # For dealing with factors
 library(here)         # For the here() function
 library(rmarkdown)    # For rendering markdown documents
+library(zip)          # For archiving files
 
 
 ### 2 - Define month start date and derive end date ----
