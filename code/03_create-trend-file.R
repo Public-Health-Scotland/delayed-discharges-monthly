@@ -44,7 +44,8 @@ trend %<>%
   
   # Remove existing matched variables
   select(-any_of(c("data_zone", "hscp", "locality", "location_name",
-                   "health_board_code", "local_authority_code"))) %>%
+                   "health_board_code", "local_authority_code",
+                   "specialty_desc"))) %>%
   
   # Match on new matched variables
   
@@ -64,7 +65,11 @@ trend %<>%
   left_join(hb_lookup(), by = "health_board") %>%
   left_join(la_lookup(), by = "local_authority") %>%
   relocate(health_board_code, .after = health_board) %>%
-  relocate(local_authority_code, .after = local_authority)
+  relocate(local_authority_code, .after = local_authority) %>%
+  
+  # Specialty description
+  left_join(spec_lookup(), by = "specialty_code") %>%
+  relocate(specialty_desc, .after = specialty_code)
 
 
 ### 4 - Save file ----
