@@ -1,3 +1,17 @@
+#########################################################################
+# Name of file - census_date.R
+# Data release - Monthly Delayed Discharges publication
+# Original Authors - Alice Byers
+# Orginal Date - July 2020
+#
+# Type - Reproducible Analytical Pipeline (RAP)
+# Written/run on - RStudio Server
+# Version of R - 3.6.1
+#
+# Description - Function to derive census date
+#########################################################################
+
+
 census_date <- function(start_month){
   
   if(!lubridate::is.Date(start_month)){
@@ -13,6 +27,7 @@ census_date <- function(start_month){
   end_month <-
     lubridate::ceiling_date(start_month, "month") - lubridate::days(1)
   
+  # Census date is last Thursday of the month
   rule <- 
     almanac::monthly() %>%
       almanac::recur_on_wday("Thursday", nth = -1)
@@ -20,3 +35,6 @@ census_date <- function(start_month){
   almanac::alma_search(start_month, end_month, rule)
   
 }
+
+
+### END OF SCRIPT ###

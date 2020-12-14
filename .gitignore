@@ -7,11 +7,10 @@ odbc_connect.R
 # data folders #
 data/
 trend/
-outputs/
+output/
 
 # Markdown output
-ISD-NATIONAL-STATS-REPORT.docx
-ISD-NATIONAL-STATS-SUMMARY.docx
+summary.docx
 
 # Images
 *.png
@@ -23,8 +22,7 @@ ISD-NATIONAL-STATS-SUMMARY.docx
 *.[tT][xX][tT]
 
 # Excel files #
-*.xl*
-*.[xX][lL][sS][xXmMtT]?
+*.[xX][lL][sS]*
 
 # SPSS formats #
 *.[sS][aA][vV]
