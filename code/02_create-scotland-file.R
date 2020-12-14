@@ -241,7 +241,7 @@ write_rds(
 
 ### 6 - Check if previous FY needs to be archived ----
 
-if(month(start_date) == 4){
+if(month(start_month) == 4){
   archive_data(fin_year(start_month - years(1)))
 }
 
