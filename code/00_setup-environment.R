@@ -40,7 +40,7 @@ library(zip)          # For archiving files
 
 ### 2 - Define month start date and derive end date ----
 
-start_month <- dmy(01102020)
+start_month <- dmy(01112020)
 
 end_month <- ceiling_date(start_month, "month") - days(1)
 
