@@ -125,6 +125,13 @@ census_over3 <-
   mutate(perc_total = census / sum(census) * 100,
          across(where(is.numeric), ~ round_half_up(., 0)))
 
+# Conditional text for when percentages do not sum to 100%
+rounding_text <- case_when(
+  sum(census_over3$perc_total) != 100 ~
+    "[Due to rounding, the percentages do not add up to 100%].",
+  TRUE ~ ""
+)
+
 # Get data for chart and plot
 chart_data <- 
   trend %>%
@@ -230,7 +237,7 @@ chart
 
 * At the `r month_name` census point, there were `r census$census` people delayed. This is `r census_change` to the `r prev_month_name` census point when `r prev_census` people were delayed.
 
-* Of those delayed at the `r month_name` census point, `r sum(census_over3$census)` were delayed more than three days with health and social care reasons accounting for `r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(perc_total)`%), complex needs accounting for `r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(perc_total)`%) and patient and family-related reasons for `r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(perc_total)`%).
+* Of those delayed at the `r month_name` census point, `r sum(census_over3$census)` were delayed more than three days with health and social care reasons accounting for `r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(perc_total)`%), complex needs accounting for `r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(perc_total)`%) and patient and family-related reasons for `r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(perc_total)`%). `r rounding_text`
 
 ### Background
 Timely discharge from hospital is an important indicator of quality and is a marker for person-centred, effective, integrated and harm-free care. A delayed discharge occurs when a hospital patient who is clinically ready for discharge from inpatient hospital care continues to occupy a hospital bed beyond the date they are ready for discharge. 
