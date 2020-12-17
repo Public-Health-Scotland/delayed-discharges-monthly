@@ -239,7 +239,7 @@ The average number of beds occupied per day is calculated by dividing the total 
 
 The census figure reflects the position as at the last Thursday of the month.
 
-The latest [data definitions](https://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/Delayed-Discharges/Guidelines/docs/Delayed-discharge-Data-Definitions-Recording-Manual.pdf) and [national data requirements](https://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/Delayed-Discharges/Guidelines/docs/Delayed-discharge-National-Data-Requirements.pdf) came into effect on 1 July 2016. 
+The latest [data definitions](https://beta.isdscotland.org/media/6769/dd-data-definitions-manual.pdf) and [national data requirements](https://beta.isdscotland.org/media/6767/dd-national-data-requirements.pdf) came into effect on 1 July 2016. 
 
 It should be noted that figures presented in this publication are not directly comparable with other UK countries, due to differences in definitions and data reporting.
 
