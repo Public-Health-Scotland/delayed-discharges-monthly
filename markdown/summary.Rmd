@@ -180,14 +180,7 @@ ggsave(here("output", format(start_month, "%Y-%m"),
        device = "png", dpi = 600)
 
 # Chart alt text
-alt_text <- 
-  paste0("This is a line chart showing the average number of beds occupied ",
-         "per day by delayed discharges. The average number of beds occupied ",
-         "by delayed discharges peaks in October 2018, fluctuates during 2019, ",
-         "peaks again in February 2020, before reducing dramatically in ",
-         "April 2020. May 2020 figures were similar to April 2020 but since ",
-         "then there have been increases in each month from June 2020 to ",
-         month_name, ".")
+alt_text <- read_file(here("markdown", "alt-text.txt"))
 
 # Create contact information
 contact1 <- 
