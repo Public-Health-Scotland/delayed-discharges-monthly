@@ -70,6 +70,13 @@ read_clean_data <- function(filepath){
                     sex, discharge_reason),
                   ~ str_remove_all(., "^0*"))) %>%
     
+    # Recode Aberdeen to Aberdeen City 
+    # (DQ issue to be addressed in review of validation process)
+    mutate(local_authority = case_when(
+      local_authority == "Aberdeen" ~ "Aberdeen City",
+      TRUE ~ local_authority
+    )) %>%
+    
     # Code all blanks as NA
     mutate(across(everything(), ~ na_if(., ""))) %>%
     
