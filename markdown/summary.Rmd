@@ -19,11 +19,6 @@ knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
 
-# Function to round to next highest hundred - used in ggplot
-next_200 <- function(x){
-  ceiling(x / 200) * 200
-}
-
 # Derive various formats of month
 month_name <- format(start_month, "%B %Y")
 prev_month_name <- format(start_month - months(1), "%B %Y")
@@ -132,55 +127,10 @@ rounding_text <- case_when(
   TRUE ~ ""
 )
 
-# Get data for chart and plot
-chart_data <- 
-  trend %>%
-  filter(between(census_date,
-                 start_month - months(24),
-                 end_month)) %>%
-  group_by(census_date, month) %>%
-  summarise(bed_days = sum(bed_days),
-            .groups = "drop") %>%
-  mutate(ave_bed_days = round_half_up(bed_days / days_in_month(census_date), 0),
-         month = format(census_date, "%b %y")) %>%
-  select(-bed_days)
-
-chart <-
-  chart_data %>%
-  mutate(month = fct_relevel(as.factor(month), chart_data$month)) %>%
-  ggplot(aes(x = month, y = ave_bed_days, group = 1)) +
-  geom_line(color = "#3f3685", size = 1) +
-  geom_point(color = "#3f3685", size = 2) +
-  theme(panel.background = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_line(color = "#d9d9d9"),
-        axis.title.y = element_text(size = 10, angle = 0, 
-                                    hjust = 0.5, vjust = 0.5),
-        axis.text = element_text(size = 10),
-        axis.text.x = 
-          element_text(
-            color = c("black", rep(c("transparent", "transparent", "black"), 8))),
-        axis.line = element_line(),
-        axis.title.x = element_blank()) +
-  scale_y_continuous(
-    limits = 
-      c(0, next_200(max(chart_data$ave_bed_days))),
-    breaks = 
-      seq(0, next_200(max(chart_data$ave_bed_days)), 
-          by = 200),
-    expand = c(0, 0)) +
-  ylab(str_wrap("Average number of beds occupied per day", width = 8))
-
-# Save chart to output folder
-ggsave(here("output", format(start_month, "%Y-%m"), 
-            paste0(format(start_month, "%Y-%m"), "_twitter-chart.png")), 
-       plot = chart,
-       width = 6.8, height = 3.5, 
-       device = "png", dpi = 600)
-
 # Chart alt text
-alt_text <- read_file(here("markdown", "alt-text.txt"))
+alt_text <- read_file(
+  here("output", format(start_month, "%Y-%m"), 
+       paste0(format(start_month, "%Y-%m"), "_alt-text.txt")))
 
 # Create contact information
 contact1 <- 
@@ -221,8 +171,12 @@ This release by Public Health Scotland (PHS) provides a monthly update on the nu
 
 <Div custom-style = "Chart Title">Delayed Discharge bed use in Scotland from `r format(start_month - months(24), "%B %Y")` to `r month_name`</Div>
 <Div custom-style = "Figure_Style">
-```{r fig-uptake, echo=FALSE, fig.width=6.8, fig.height=3.5, fig.cap=alt_text}
-chart
+```{r chart, echo=FALSE, fig.cap = alt_text}
+include_graphics(
+  here("output", format(start_month, "%Y-%m"), 
+            paste0(format(start_month, "%Y-%m"), "_twitter-chart.png")), 
+  dpi = 600
+)
 ```
 </div>
 
