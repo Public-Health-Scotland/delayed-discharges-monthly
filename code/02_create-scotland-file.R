@@ -73,6 +73,12 @@ scotland %<>%
   )) %>%
   select(-la_desc)
 
+# Check all local authorities are in lookup
+if(any(!(scotland$local_authority %in% 
+         read_rds(here("lookups", "local-authority.rds"))$la_desc))){
+  stop("At least one local authority submitted not in lookup file.")
+}
+
 # Recode out of area flag
 scotland %<>%
   mutate(out_of_area = 
@@ -87,7 +93,9 @@ scotland %<>%
   mutate(sex = 
            case_when(
              str_detect(sex, "(1|M)") ~ "Male",
-             str_detect(sex, "(2|F)") ~ "Female"
+             str_detect(sex, "(2|F)") ~ "Female",
+             as.numeric(str_sub(chi, 9, 9)) %% 2 == 1 ~ "Male",
+             as.numeric(str_sub(chi, 9, 9)) %% 2 == 0 ~ "Female"
            ))
 
 # Code missing reason for delay as 11A
