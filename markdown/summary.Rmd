@@ -173,8 +173,8 @@ This release by Public Health Scotland (PHS) provides a monthly update on the nu
 <Div custom-style = "Figure_Style">
 ```{r chart, echo=FALSE, fig.cap = alt_text}
 include_graphics(
-  here("output", format(start_month, "%Y-%m"), 
-            paste0(format(start_month, "%Y-%m"), "_twitter-chart.png")), 
+  here("output", pub_date(start_month), 
+            paste0(pub_date(start_month), "_twitter-chart.png")), 
   dpi = 600
 )
 ```

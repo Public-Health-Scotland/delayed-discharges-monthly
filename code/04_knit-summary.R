@@ -16,6 +16,7 @@
 
 source(here::here("code", "00_setup-environment.R"))
 
+source(here("functions", "pub_date.R"))
 source(here("functions", "edit_alt_text.R"))
 
 
@@ -66,8 +67,8 @@ chart <-
   ylab(str_wrap("Average number of beds occupied per day", width = 8))
 
 # Save chart to output folder
-ggsave(here("output", format(start_month, "%Y-%m"), 
-            paste0(format(start_month, "%Y-%m"), "_twitter-chart.png")), 
+ggsave(here("output", pub_date(start_month), 
+            paste0(pub_date(start_month), "_twitter-chart.png")), 
        plot = chart,
        width = 6.8, height = 3.5, 
        device = "png", dpi = 600)
@@ -79,6 +80,7 @@ ggsave(here("output", format(start_month, "%Y-%m"),
 # containing alt text for the chart just created. This text file should
 # be edited to reflect chart, saved and closed.
 
+print(chart)
 edit_alt_text(start_month)
 
 
@@ -86,8 +88,8 @@ edit_alt_text(start_month)
 
 render(
   input = here("markdown", "summary.Rmd"),
-  output_file = here("output", format(start_month, "%Y-%m"),
-                     paste0(format(start_month, "%Y-%m"), "_summary.docx"))
+  output_file = here("output", pub_date(start_month),
+                     paste0(pub_date(start_month), "_summary.docx"))
 )
 
 

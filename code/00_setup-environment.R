@@ -59,7 +59,8 @@ paste0("data/", format(start_month, "%Y-%m"), "/submitted/", boards) %>%
 use_directory("trend")
 
 # Create folder for output
-use_directory(paste0("output/", format(start_month, "%Y-%m")))
+source(here("functions", "pub_date.R"))
+use_directory(paste0("output/", pub_date(start_month)))
 
 
 ### 4 - Define filepaths dependent on whether running on server or desktop ----
