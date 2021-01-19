@@ -129,8 +129,8 @@ rounding_text <- case_when(
 
 # Chart alt text
 alt_text <- read_file(
-  here("output", format(start_month, "%Y-%m"), 
-       paste0(format(start_month, "%Y-%m"), "_alt-text.txt")))
+  here("output", pub_date(start_month), 
+       paste0(pub_date(start_month), "_alt-text.txt")))
 
 # Create contact information
 contact1 <- 
