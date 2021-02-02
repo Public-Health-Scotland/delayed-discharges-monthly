@@ -189,7 +189,7 @@ include_graphics(
 ### Background
 Timely discharge from hospital is an important indicator of quality and is a marker for person-centred, effective, integrated and harm-free care. A delayed discharge occurs when a hospital patient who is clinically ready for discharge from inpatient hospital care continues to occupy a hospital bed beyond the date they are ready for discharge. 
 
-The average number of beds occupied per day is calculated by dividing the total monthly number of delayed discharge bed days by the number of days in the calendar month. PHS considers this daily average a better statistic for comparing month on month differences as the number of days in a month varies.
+The average number of beds occupied per day is calculated by dividing the total monthly number of delayed discharge bed days by the number of days in the calendar month. PHS considers this daily average a better statistic for comparing month on month differences as the number of days in a month varies. The percentage change is based on rounded figures.
 
 The census figure reflects the position as at the last Thursday of the month.
 
