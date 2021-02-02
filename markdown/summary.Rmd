@@ -191,6 +191,8 @@ Timely discharge from hospital is an important indicator of quality and is a mar
 
 The average number of beds occupied per day is calculated by dividing the total monthly number of delayed discharge bed days by the number of days in the calendar month. PHS considers this daily average a better statistic for comparing month on month differences as the number of days in a month varies. The percentage change is based on rounded figures.
 
+Delayed discharge figures in NHSScotland have been affected by measures put in place to respond to COVID-19. The marked fall in delayed discharges is likely to be due to patients being moved out of hospital to increase capacity.
+
 The census figure reflects the position as at the last Thursday of the month.
 
 The latest [data definitions](https://beta.isdscotland.org/media/6769/dd-data-definitions-manual.pdf) and [national data requirements](https://beta.isdscotland.org/media/6767/dd-national-data-requirements.pdf) came into effect on 1 July 2016. 
