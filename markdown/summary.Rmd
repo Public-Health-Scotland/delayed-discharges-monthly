@@ -167,8 +167,6 @@ This release by Public Health Scotland (PHS) provides a monthly update on the nu
 
 * In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r month_change_text` to `r prev_month_name` when the daily average was `r prev_month_bd`, `r and_but` lower than the monthly average prior to COVID-19 measures being put in place.
 
-<br>
-
 <Div custom-style = "Chart Title">Delayed Discharge bed use in Scotland from `r format(start_month - months(24), "%B %Y")` to `r month_name`</Div>
 <Div custom-style = "Figure_Style">
 ```{r chart, echo=FALSE, fig.cap = alt_text}
@@ -179,8 +177,6 @@ include_graphics(
 )
 ```
 </div>
-
-<br>
 
 * At the `r month_name` census point, there were `r census$census` people delayed. This is `r census_change` to the `r prev_month_name` census point when `r prev_census` people were delayed.
 
