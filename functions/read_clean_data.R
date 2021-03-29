@@ -84,7 +84,14 @@ read_clean_data <- function(filepath){
     mutate(across(contains("delay_reason"), toupper)) %>%
     
     # Format dates
-    mutate(across(contains("date"), dmy)) %>%
+    mutate(across(
+      contains("date"),
+      ~ case_when(
+        # Excel format
+        nchar(.) == 5 ~ excel_numeric_to_date(as.numeric(.)),
+        TRUE ~ dmy(.)
+      )
+    )) %>%
     
     # Pad CHI Number
     mutate(chi = chi_pad(chi)) %>%
