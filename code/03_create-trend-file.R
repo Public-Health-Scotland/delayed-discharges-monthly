@@ -25,11 +25,21 @@ scotland <-
          paste0(format(start_month, "%Y-%m"), "_scotland.rds"))
   )
 
+# Check that previous months trend file exists
+if(!file.exists(
+  here("trend", 
+       paste0(format(start_month - months(1), "%Y-%m"), "_trend.rds"))
+)){
+  paste("The trend file for", format(start_month - months(1), "%B %Y"),
+        "does not exist or has been archived. To continue running this",
+        "script, the following file must exist in the trend folder:",
+        format(start_month - months(1), "%Y-%m_trend.rds"))
+}
+
 trend <-
-  read_rds(
-    here("trend", 
-         paste0(format(start_month - months(1), "%Y-%m"), "_trend.rds"))
-  )
+  here("trend", 
+       paste0(format(start_month - months(1), "%Y-%m"), "_trend.rds")) %>%
+  read_rds()
 
 
 ### 2 - Add latest month Scotland file to previous month trend ----
