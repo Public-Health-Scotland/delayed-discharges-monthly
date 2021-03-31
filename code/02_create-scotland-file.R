@@ -2,7 +2,7 @@
 # Name of file - 02_create-scotland-file.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - July 2020
+# Original Date - July 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server

@@ -2,7 +2,7 @@
 # Name of file - 03_create-trend-file.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - November 2020
+# Original Date - November 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server

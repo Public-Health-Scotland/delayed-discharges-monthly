@@ -2,7 +2,7 @@
 # Name of file - read_clean_data.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - July 2020
+# Original Date - July 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server

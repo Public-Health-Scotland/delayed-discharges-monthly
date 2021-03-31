@@ -2,7 +2,7 @@
 # Name of file - archive_data.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - December 2020
+# Original Date - December 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server
