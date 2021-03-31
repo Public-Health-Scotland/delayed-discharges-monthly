@@ -2,7 +2,7 @@
 # Name of file - 00_setup-environment.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - July 2020
+# Original Date - July 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server
@@ -13,8 +13,13 @@
 # process is run
 #########################################################################
 
+### 0 - UPDATE THIS DATE ----
 
-### 1 - Load packages ----
+# First day of reporting month
+start_month <- lubridate::dmy(01022021)
+
+
+### 1 - Load packages and functions ----
 
 library(dplyr)        # For data manipulation in the "tidy" way
 library(tidyr)        # For data manipulation in the "tidy" way
@@ -37,10 +42,10 @@ library(here)         # For the here() function
 library(rmarkdown)    # For rendering markdown documents
 library(zip)          # For archiving files
 
+source(here("functions", "pub_date.R"))
 
-### 2 - Define month start date and derive end date ----
 
-start_month <- dmy(01022021)
+### 2 - Derive end date ----
 
 end_month <- ceiling_date(start_month, "month") - days(1)
 
@@ -58,9 +63,11 @@ paste0("data/", format(start_month, "%Y-%m"), "/submitted/", boards) %>%
 # Create folder for trend files
 use_directory("trend")
 
-# Create folder for output
-source(here("functions", "pub_date.R"))
-use_directory(paste0("output/", pub_date(start_month)))
+# Create folders for output
+paste("output", year(pub_date(start_month)), pub_date(start_month), 
+      c("publication", "management-info", "open-data"),
+      sep = "/") %>%
+  walk(use_directory)
 
 
 ### 4 - Define filepaths dependent on whether running on server or desktop ----
