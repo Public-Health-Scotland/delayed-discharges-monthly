@@ -313,19 +313,22 @@ census <-
 
 write_csv(
   bed_days_hb,
-  here("output", pub_date(start_month),
+  here("output", year(pub_date(start_month)), 
+       pub_date(start_month), "publication",
        paste0(pub_date(start_month), "_bed-days-hb.csv"))
 )
 
 write_csv(
   bed_days_la,
-  here("output", pub_date(start_month),
+  here("output", year(pub_date(start_month)),
+       pub_date(start_month), "publication",
        paste0(pub_date(start_month), "_bed-days-la.csv"))
 )
 
 write_csv(
   census,
-  here("output", pub_date(start_month),
+  here("output", year(pub_date(start_month)),
+       pub_date(start_month), "publication",
        paste0(pub_date(start_month), "_census.csv"))
 )
 

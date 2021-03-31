@@ -39,36 +39,42 @@ edit_alt_text <- function(start_month){
   if(
     # File already exists
     file.exists(
-      here::here("output", current_pub_date, 
-           paste0(current_pub_date, "_alt-text.txt")))
+      here::here("output", lubridate::year(current_pub_date), 
+                 current_pub_date, "publication",
+                 paste0(current_pub_date, "_alt-text.txt")))
   ){
     print(paste0(current_pub_date, "_alt-text.txt already exists."))
   }else if(
     # File exists for previous month
     file.exists(
-      here::here("output", prev_pub_date, 
-           paste0(prev_pub_date, "_alt-text.txt"))
+      here::here("output", lubridate::year(prev_pub_date), 
+                 prev_pub_date, "publication",
+                 paste0(prev_pub_date, "_alt-text.txt"))
     )){
       # Copy file from previous month
     print("Copying alt text file from previous month.")
     invisible(file.copy(
-      here::here("output", prev_pub_date, 
-           paste0(prev_pub_date, "_alt-text.txt")),
-      here::here("output", current_pub_date, 
-           paste0(current_pub_date, "_alt-text.txt"))
+      here::here("output", lubridate::year(prev_pub_date),
+                 prev_pub_date, "publication",
+                 paste0(prev_pub_date, "_alt-text.txt")),
+      here::here("output", lubridate::year(current_pub_date),
+                 current_pub_date, "publication",
+                 paste0(current_pub_date, "_alt-text.txt"))
     ))
   }else{
     # Create blank text file
     print("Creating blank text file for alt text.")
     invisible(file.create(
-      here::here("output", current_pub_date, 
-           paste0(current_pub_date, "_alt-text.txt")))
+      here::here("output", lubridate::year(current_pub_date),
+                 current_pub_date, "publication",
+                 paste0(current_pub_date, "_alt-text.txt")))
     )
   }
   
   # Open alt text file to edit for current month
-  file.edit(here::here("output", current_pub_date, 
-                 paste0(current_pub_date, "_alt-text.txt")))
+  file.edit(here::here("output", lubridate::year(current_pub_date),
+                       current_pub_date, "publication",
+                       paste0(current_pub_date, "_alt-text.txt")))
   
 }
 

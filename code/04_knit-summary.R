@@ -12,13 +12,20 @@
 #########################################################################
 
 
-### 0 - Load setup environment ----
+### 0 - Setup ----
 
+# Run setup environment script
 source(here::here("code", "00_setup-environment.R"))
 
+# Load required functions
 source(here("functions", "pub_date.R"))
 source(here("functions", "edit_alt_text.R"))
 
+# Define output folder
+output_folder <- here(
+  "output", year(pub_date(start_month)), pub_date(start_month), "publication/"
+)
+  
 
 ### 1 - Create summary chart ----
 
@@ -67,8 +74,7 @@ chart <-
   ylab(str_wrap("Average number of beds occupied per day", width = 8))
 
 # Save chart to output folder
-ggsave(here("output", pub_date(start_month), 
-            paste0(pub_date(start_month), "_twitter-chart.png")), 
+ggsave(paste0(output_folder, pub_date(start_month), "_twitter-chart.png"), 
        plot = chart,
        width = 6.8, height = 3.5, 
        device = "png", dpi = 600)
@@ -88,8 +94,7 @@ edit_alt_text(start_month)
 
 render(
   input = here("markdown", "summary.Rmd"),
-  output_file = here("output", pub_date(start_month),
-                     paste0(pub_date(start_month), "_summary.docx"))
+  output_file = paste0(output_folder, pub_date(start_month), "_summary.docx")
 )
 
 
