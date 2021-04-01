@@ -25,7 +25,7 @@ trend <-
          paste0(format(start_month, "%Y-%m"), "_trend.rds"))
   ) %>%
   
-  # Remove Code 100's and data prior to April 2019
+  # Remove Code 100's and data prior to April 2018
   filter(delay_reason_1 != 100 &
            month_date >= dmy(01042018))
 
@@ -63,20 +63,120 @@ discharges_hb <-
   # Add Scotland rows
   group_by(month_date) %>%
   group_modify(~ adorn_totals(., name = "Scotland")) %>%
-  ungroup() %>%
-  
-  # Add formatted date and lookup for excel vlookups
-  mutate(month_date = format(month_date, "%B %Y"),
-         lookup = paste0(month_date, health_board), .before = everything())
+  ungroup()
 
 
-### 3 - Save data ----
+### 3 - Create excel output using template ----
 
-write_csv(
-  discharges_hb,
+# Read in template
+wb <- loadWorkbook(here("templates", "discharges-template.xlsx"))
+
+# Write publication webpage link to guide tab
+link <- 
+  paste0("https://beta.isdscotland.org/find-publications-and-data/",
+         "health-and-social-care/delayed-discharges/",
+         "delayed-discharges-in-nhsscotland-monthly/",
+         format(pub_date(start_month), "%e-%B-%Y") %>% str_trim())
+names(link) <- "Link to metadata document"
+class(link) <- "hyperlink"
+
+writeData(wb, 
+          "Guide", 
+          startCol = "J",
+          startRow = 5,
+          x = link)
+
+# Lookup tab - List of months
+months <-
+  discharges_hb %>%
+  count(month_date) %>%
+  mutate(month = format(month_date, "%B %Y"),
+         n = row_number()) %>%
+  select(n1 = n, month, n2 = n)
+
+writeData(
+  wb,
+  "lookup",
+  startCol = "A",
+  startRow = 1,
+  months,
+  colNames = FALSE
+)
+
+# Lookup tab - List of FYs
+fy <-
+  discharges_hb %>%
+  count(fy = fin_year(month_date)) %>%
+  mutate(n = row_number()) %>%
+  select(n, fy)
+
+writeData(
+  wb,
+  "lookup",
+  startCol = "E",
+  startRow = 1,
+  fy,
+  colNames = FALSE
+)
+
+# Lookup tab - Latest month in various formats
+latest_dates <-
+  tibble(
+    x = c(format(start_month, "%B"),
+          fin_year(start_month),
+          year(start_month),
+          format(start_month, "%B %Y"))
+  )
+
+writeData(
+  wb,
+  "lookup",
+  startCol = "I",
+  startRow = 2,
+  latest_dates,
+  colNames = FALSE
+)
+
+# Data tab
+data_tab <-
+  discharges_hb %>%
+  mutate(lookup = paste0(format(month_date, "%B %Y"), health_board), 
+         .before = everything())
+
+writeData(
+  wb,
+  "data",
+  startCol = "A",
+  startRow = 1,
+  data_tab
+)
+
+# Chart data tab - Data for latest 25 months and Scotland only
+chart_data <-
+  discharges_hb %>%
+  filter(health_board == "Scotland" &
+           between(month_date, start_month - months(24), start_month)) %>%
+  mutate(month_date = format(month_date, "%b %y")) %>%
+  select(month_date, home, placement)
+
+writeData(
+  wb,
+  "chart_data",
+  startCol = "A",
+  startRow = 1,
+  chart_data
+)
+
+# Hide data and lookup tabs
+sheetVisibility(wb)[4:6] <- "hidden"
+
+# Save excel workbook
+saveWorkbook(
+  wb,
   here("output", year(pub_date(start_month)),
        pub_date(start_month), "publication",
-       paste0(pub_date(start_month), "_discharges.csv"))
+       paste0(pub_date(start_month), "_discharges-tables.xlsx")),
+  overwrite = TRUE
 )
 
 

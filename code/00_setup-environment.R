@@ -41,6 +41,7 @@ library(forcats)      # For dealing with factors
 library(here)         # For the here() function
 library(rmarkdown)    # For rendering markdown documents
 library(zip)          # For archiving files
+library(openxlsx)     # For creating formatted excel files
 
 source(here("functions", "pub_date.R"))
 

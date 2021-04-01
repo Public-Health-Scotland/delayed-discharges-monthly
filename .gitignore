@@ -35,3 +35,6 @@ summary.docx
 !lookups/acute-hospitals.rds
 !lookups/local-authority.rds
 !lookups/reason-for-delay.rds
+
+# All excel templates
+!templates/discharges-template.xlsx
