@@ -45,8 +45,8 @@ discharges_hb <-
   # Add discharge reason description
   mutate(discharge_reason = 
            case_when(
-             discharge_reason == 1 ~ "placement",
-             discharge_reason %in% 2:3 ~ "home"
+             discharge_reason == 1 ~ "Placement",
+             discharge_reason %in% 2:3 ~ "Home"
            )) %>%
   
   # Aggregate and restructure
@@ -54,7 +54,7 @@ discharges_hb <-
   summarise(n = n(), .groups = "drop") %>%
   pivot_wider(values_from = n, names_from = discharge_reason, 
               values_fill = list(n = 0)) %>%
-  mutate(total = reduce(select(., home:placement), `+`)) %>%
+  mutate(total = reduce(select(., Home:Placement), `+`)) %>%
   
   # Complete for all health boards
   complete(month_date, health_board = unique(trend$health_board), 
@@ -92,7 +92,7 @@ months <-
   count(month_date) %>%
   mutate(month = format(month_date, "%B %Y"),
          n = row_number()) %>%
-  select(n1 = n, month, n2 = n)
+  select(month, n)
 
 writeData(
   wb,
@@ -100,6 +100,7 @@ writeData(
   startCol = "A",
   startRow = 1,
   months,
+  name = "months",
   colNames = FALSE
 )
 
@@ -116,6 +117,7 @@ writeData(
   startCol = "E",
   startRow = 1,
   fy,
+  name = "fy",
   colNames = FALSE
 )
 
@@ -148,7 +150,8 @@ writeData(
   "data",
   startCol = "A",
   startRow = 1,
-  data_tab
+  data_tab,
+  name = "data"
 )
 
 # Chart data tab - Data for latest 25 months and Scotland only
@@ -157,14 +160,15 @@ chart_data <-
   filter(health_board == "Scotland" &
            between(month_date, start_month - months(24), start_month)) %>%
   mutate(month_date = format(month_date, "%b %y")) %>%
-  select(month_date, home, placement)
+  select(month_date, Home, Placement)
 
 writeData(
   wb,
   "chart_data",
   startCol = "A",
   startRow = 1,
-  chart_data
+  chart_data,
+  name = "chartdata"
 )
 
 # Hide data and lookup tabs
