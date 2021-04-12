@@ -121,6 +121,16 @@ writeData(
   colNames = FALSE
 )
 
+writeData(
+  wb,
+  "lookup",
+  startCol = "G",
+  startRow = 1,
+  fy[, 2],
+  name = "fy_list",
+  colNames = FALSE
+)
+
 # Lookup tab - Latest month in various formats
 latest_dates <-
   tibble(
@@ -182,6 +192,9 @@ saveWorkbook(
        paste0(pub_date(start_month), "_discharges-tables.xlsx")),
   overwrite = TRUE
 )
+
+# NOTE: The only manual change required to the resulting excel workbook is to
+# change the drop down selections to the latest FY and month in both tabs.
 
 
 ### END OF SCRIPT ###
