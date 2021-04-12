@@ -39,3 +39,6 @@ summary.docx
 # All excel templates
 !templates/discharges-template.xlsx
 !templates/code-100-template.xlsx
+
+# National Stats Kitemark
+!markdown/templates/national-stats-kitemark.jpg

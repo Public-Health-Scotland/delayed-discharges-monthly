@@ -90,11 +90,19 @@ print(chart)
 edit_alt_text(start_month)
 
 
-### 3 - Knit markdown document ----
+### 3 - Knit summary markdown document ----
 
 render(
   input = here("markdown", "summary.Rmd"),
   output_file = paste0(output_folder, pub_date(start_month), "_summary.docx")
+)
+
+
+### 4 - Knit metdata markdown document ----
+
+render(
+  input = here("markdown", "metadata.Rmd"),
+  output_file = paste0(output_folder, pub_date(start_month), "_metadata.docx")
 )
 
 
