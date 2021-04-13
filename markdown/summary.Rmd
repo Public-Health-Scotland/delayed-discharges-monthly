@@ -163,7 +163,7 @@ contact <- tibble(contact1, contact2)
 This release by Public Health Scotland (PHS) provides a monthly update on the number of hospital bed days associated with delayed discharges and the number of discharges from hospital that followed a period of delay. Information is also provided on the number of people experiencing a delay in discharge from hospital at the monthly census point. The data relate to people aged 18 years and over who were clinically ready for discharge. Delayed discharge figures in NHSScotland have been affected by measures put in place to respond to COVID-19.
 
 ### Main Points
-* In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed. This is `r year_change_text` with the number of delayed days spent in hospital in `r prev_year_name` (`r prev_year_bd`).
+* In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed. This is `r year_change_text` with the number of delayed days in `r prev_year_name` (`r prev_year_bd`).
 
 * In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r month_change_text` to `r prev_month_name` when the daily average was `r prev_month_bd`, `r and_but` lower than the monthly average prior to COVID-19 measures being put in place.
 
@@ -200,7 +200,7 @@ It should be noted that figures presented in this publication are not directly c
 
 <Div custom-style = "Normal-no-space">
 ```{r tab_contact, echo = FALSE}
-suppressWarnings(kable(contact, col.names = NULL))
+suppressWarnings(kable(contact, format = "simple", col.names = NULL))
 ```
 </Div>
 

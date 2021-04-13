@@ -76,7 +76,7 @@ chart <-
 # Save chart to output folder
 ggsave(paste0(output_folder, pub_date(start_month), "_twitter-chart.png"), 
        plot = chart,
-       width = 6.8, height = 3.5, 
+       width = 6.8, height = 3, 
        device = "png", dpi = 600)
 
 
