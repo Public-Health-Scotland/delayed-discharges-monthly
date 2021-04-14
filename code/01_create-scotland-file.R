@@ -20,6 +20,24 @@ source(here::here("code", "00_setup-environment.R"))
 walk(list.files(here("functions"), full.names = TRUE), source)
 
 
+### 0a - Copy data files from 'Single Submissions' folder
+
+# This is a temporary step until the submission/validation process is
+# integrated into the RAP project. See SOP for more details.
+
+walk(
+  boards,
+  ~ file.copy(
+    paste0(
+      "/conf/delayed_discharges/Data files/Single Submissions (July 2016 ",
+      "onwards)/", format(start_month, "%Y_%m"), "/Data/", .x, "/", .x, ".csv"
+    ),
+    here("data", format(start_month, "%Y-%m"), "submitted", 
+         .x, paste0(.x, ".csv"))
+  )
+)
+
+
 ### 1 - Read in csv file for each board and add together ----
 
 # If a file doesn't exist or has no data, an error message will appear
