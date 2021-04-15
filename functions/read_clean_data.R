@@ -78,7 +78,7 @@ read_clean_data <- function(filepath){
     )) %>%
     
     # Code all blanks as NA
-    mutate(across(everything(), ~ na_if(., ""))) %>%
+    mutate(across(where(is.character), ~ na_if(., ""))) %>%
     
     # Ensure all reason for delay codes upper case
     mutate(across(contains("delay_reason"), toupper)) %>%
@@ -87,8 +87,9 @@ read_clean_data <- function(filepath){
     mutate(across(
       contains("date"),
       ~ case_when(
+        is.na(.) ~ NA_Date_,
         # Excel format
-        nchar(.) == 5 ~ excel_numeric_to_date(as.numeric(.)),
+        nchar(.) == 5 ~ excel_numeric_to_date(suppressWarnings(as.numeric(.))),
         TRUE ~ dmy(.)
       )
     )) %>%
