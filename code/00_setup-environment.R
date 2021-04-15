@@ -16,7 +16,7 @@
 ### 0 - UPDATE THIS DATE ----
 
 # First day of reporting month
-start_month <- lubridate::dmy(01022021)
+start_month <- lubridate::dmy(01032021)
 
 
 ### 1 - Load packages and functions ----
