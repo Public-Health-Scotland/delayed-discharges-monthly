@@ -1,5 +1,5 @@
 #########################################################################
-# Name of file - 03_create-trend-file.R
+# Name of file - 02_create-trend-file.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
 # Original Date - November 2020

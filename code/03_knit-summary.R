@@ -1,5 +1,5 @@
 #########################################################################
-# Name of file - 04_knit-summary.R
+# Name of file - 03_knit-summary.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
 # Original Date - December 2020
