@@ -193,8 +193,9 @@ saveWorkbook(
   overwrite = TRUE
 )
 
-# NOTE: The only manual change required to the resulting excel workbook is to
-# change the drop down selections to the latest FY and month in both tabs.
+# TO DO: The only manual change required to the resulting excel workbook is to
+# change the drop down selections to the latest FY and month in both tabs
+# and save.
 
 
 ### END OF SCRIPT ###
