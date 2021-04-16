@@ -98,7 +98,7 @@ render(
 )
 
 
-### 4 - Knit metdata markdown document ----
+### 4 - Knit metadata markdown document ----
 
 render(
   input = here("markdown", "metadata.Rmd"),
