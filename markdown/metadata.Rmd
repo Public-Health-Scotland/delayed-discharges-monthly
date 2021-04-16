@@ -1,7 +1,7 @@
 ---
 output: 
   word_document:
-    reference_docx: "templates/metadata-template.docx"
+    reference_docx: !expr here::here("templates", "metadata-template.docx")
     fig_caption: no
 ---
 
@@ -17,7 +17,7 @@ source(here("functions", "pub_date.R"))
 <Div custom-style = "Publication subtitle">This is a National Statistics Publication</Div>
 
 <Div custom-style = "Figure_Style">
-![National Statistics Quality Mark](templates/national-stats-kitemark.jpg)
+![National Statistics Quality Mark](`r here("templates", "national-stats-kitemark.jpg")`)
 </Div>
 
 National Statistics status means that the official statistics meet the highest standards of trustworthiness, quality and public value. They are identified by the quality mark shown above.

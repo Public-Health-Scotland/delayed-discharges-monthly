@@ -1,7 +1,7 @@
 ---
 output: 
   word_document:
-    reference_docx: "templates/summary-template.docx"
+    reference_docx: !expr here::here("templates", "summary-template.docx")
     fig_caption: no
 ---
 
