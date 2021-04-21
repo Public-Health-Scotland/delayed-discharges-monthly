@@ -25,6 +25,9 @@ source(here("functions", "edit_alt_text.R"))
 output_folder <- here(
   "output", year(pub_date(start_month)), pub_date(start_month), "publication/"
 )
+
+# Set option to always evaluate code in YAML
+options(yaml.eval.expr = TRUE)
   
 
 ### 1 - Create summary chart ----
