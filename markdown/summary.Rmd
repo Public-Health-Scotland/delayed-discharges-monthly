@@ -151,7 +151,7 @@ contact <- tibble(contact1, contact2)
 <Div custom-style = "Publication Title">Delayed Discharges in</Div>
 <Div custom-style = "Publication Title">NHSScotland</Div>
 <Div custom-style = "Publication subtitle">Figures for `r format(start_month, "%B %Y")`</Div>
-<Div custom-style = "National stats">A National Statistics statistical release for Scotland</Div>
+<Div custom-style = "National stats">A National Statistics release for Scotland</Div>
 
 <br>
 
@@ -212,6 +212,10 @@ Data from this publication, along with background information, glossary, and a m
 For more information on delayed discharges see the [delayed discharge section of our website](https://beta.isdscotland.org/topics/delayed-discharges/). For related topics, please see the [health and social community care pages](http://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/).
 
 The next release of this publication will be `r next_pub_date_full`.
+
+Other formats of this publication are available on request at:  
+0131 314 5300  
+[phs.otherformats@phs.scot](mailto:phs.otherformats@phs.scot)
 
 ### NHS Performs
 A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot/). NHS Performs is a website that brings together a range of information on how hositals and NHS Boards within NHSScotland are performing.
