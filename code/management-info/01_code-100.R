@@ -45,6 +45,7 @@ code_100_hb <-
       group_by(health_board, specialty_desc) %>% 
       summarise(census_total = n(),
                 .groups = "drop") %>%
+  arrange(specialty_desc) %>%
   
   # Restructure so column for each specialty 
   pivot_wider(names_from = specialty_desc, 
@@ -70,6 +71,7 @@ code_100_la <-
   group_by(local_authority, specialty_desc) %>% 
   summarise(census_total = n(),
             .groups = "drop") %>%
+  arrange(specialty_desc) %>% 
   
   # Restructure so column for each specialty 
   pivot_wider(names_from = specialty_desc, 
