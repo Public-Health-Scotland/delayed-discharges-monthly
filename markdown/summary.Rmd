@@ -119,10 +119,10 @@ census_over3 <-
          across(where(is.numeric), ~ round_half_up(., 0)))
 
 # Conditional text for when percentages do not sum to 100%
-rounding_text <- case_when(
-  sum(census_over3$perc_total) != 100 ~
-    "[Due to rounding, the percentages do not add up to 100%].",
-  TRUE ~ ""
+rounding_text <- if_else(
+  sum(census_over3$perc_total) != 100,
+  "[Due to rounding, the percentages do not add up to 100%].",
+  ""
 )
 
 # Chart alt text

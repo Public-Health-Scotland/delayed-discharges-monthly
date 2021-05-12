@@ -72,9 +72,8 @@ read_clean_data <- function(filepath){
     
     # Recode Aberdeen to Aberdeen City 
     # (DQ issue to be addressed in review of validation process)
-    mutate(local_authority = case_when(
-      local_authority == "Aberdeen" ~ "Aberdeen City",
-      TRUE ~ local_authority
+    mutate(local_authority = if_else(
+      local_authority == "Aberdeen", "Aberdeen City", local_authority
     )) %>%
     
     # Code all blanks as NA
