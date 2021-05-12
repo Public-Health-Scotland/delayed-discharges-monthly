@@ -15,7 +15,7 @@
 
 ### 0 - Manual Variable(s) - TO UPDATE ----
 
-# First day of reporting month
+# UPDATE - First day of reporting month (ddmmyyyy)
 start_month <- lubridate::dmy(01032021)
 
 
