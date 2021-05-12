@@ -13,7 +13,7 @@
 # process is run
 #########################################################################
 
-### 0 - UPDATE THIS DATE ----
+### 0 - Manual Variable(s) - TO UPDATE ----
 
 # First day of reporting month
 start_month <- lubridate::dmy(01032021)
