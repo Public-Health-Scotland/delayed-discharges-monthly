@@ -12,6 +12,11 @@
 #########################################################################
 
 
+# NOTE: After running this script, a manual edit is required to the resulting 
+# excel workbook. Open the file, change the drop down selections to the 
+# latest FY and month in both tabs and save.
+
+
 ### 0 - Load setup environment ----
 
 source(here::here("code", "00_setup-environment.R"))
