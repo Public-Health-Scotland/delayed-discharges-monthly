@@ -17,11 +17,6 @@
 # Run setup environment script
 source(here::here("code", "00_setup-environment.R"))
 
-# Define output folder
-output_folder <- here(
-  "output", year(pub_date(start_month)), pub_date(start_month), "publication/"
-)
-
 # Set option to always evaluate code in YAML
 options(yaml.eval.expr = TRUE)
   
@@ -73,10 +68,12 @@ chart <-
   ylab(str_wrap("Average number of beds occupied per day", width = 8))
 
 # Save chart to output folder
-ggsave(paste0(output_folder, pub_date(start_month), "_twitter-chart.png"), 
-       plot = chart,
-       width = 6.8, height = 3, 
-       device = "png", dpi = 600)
+ggsave(
+  here("output", year(pub_date(start_month)), pub_date(start_month), 
+       "publication", paste0(pub_date(start_month), "_twitter-chart.png")), 
+  plot = chart,
+  width = 6.8, height = 3, 
+  device = "png", dpi = 600)
 
 
 ### 2 - Edit alt text ----
@@ -93,7 +90,9 @@ edit_alt_text(start_month)
 
 render(
   input = here("markdown", "summary.Rmd"),
-  output_file = paste0(output_folder, pub_date(start_month), "_summary.docx")
+  output_file = 
+    here("output", year(pub_date(start_month)), pub_date(start_month), 
+         "publication", paste0(pub_date(start_month), "_summary.docx"))
 )
 
 
@@ -101,7 +100,9 @@ render(
 
 render(
   input = here("markdown", "metadata.Rmd"),
-  output_file = paste0(output_folder, pub_date(start_month), "_metadata.docx")
+  output_file = 
+    here("output", year(pub_date(start_month)), pub_date(start_month), 
+         "publication", paste0(pub_date(start_month), "_metadata.docx"))
 )
 
 
