@@ -17,10 +17,6 @@
 # Run setup environment script
 source(here::here("code", "00_setup-environment.R"))
 
-# Load required functions
-source(here("functions", "pub_date.R"))
-source(here("functions", "edit_alt_text.R"))
-
 # Define output folder
 output_folder <- here(
   "output", year(pub_date(start_month)), pub_date(start_month), "publication/"

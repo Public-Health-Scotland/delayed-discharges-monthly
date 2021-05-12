@@ -43,7 +43,7 @@ library(rmarkdown)    # For rendering markdown documents
 library(zip)          # For archiving files
 library(openxlsx)     # For creating formatted excel files
 
-source(here("functions", "pub_date.R"))
+walk(list.files(here("functions"), full.names = TRUE), source)
 
 
 ### 2 - Derive end date ----

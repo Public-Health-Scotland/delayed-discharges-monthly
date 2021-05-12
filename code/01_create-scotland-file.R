@@ -13,11 +13,9 @@
 #########################################################################
 
 
-### 0 - Load setup environment and functions ----
+### 0 - Load setup environment ----
 
 source(here::here("code", "00_setup-environment.R"))
-
-walk(list.files(here("functions"), full.names = TRUE), source)
 
 
 ### 0a - Copy data files from 'Single Submissions' folder
