@@ -137,9 +137,9 @@ contact1 <-
     "0131 275 6117",
     "phs.delayeddischarges@phs.scot")
 contact2 <- 
-  c("**Alice Byers**", 
+  c("**Jennifer Noall**", 
     "Senior Information Analyst", 
-    "0131 314 1725",
+    "0131 275 7720",
     "")
 
 contact <- tibble(contact1, contact2)
