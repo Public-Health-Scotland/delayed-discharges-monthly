@@ -2,7 +2,7 @@
 # Name of file - 04_create-excel-data.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - November 2020
+# Original Date - November 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server
@@ -313,20 +313,23 @@ census <-
 
 write_csv(
   bed_days_hb,
-  here("output", format(start_month, "%Y-%m"),
-       paste0(format(start_month, "%Y-%m"), "_bed-days-hb.csv"))
+  here("output", year(pub_date(start_month)), 
+       pub_date(start_month), "publication",
+       paste0(pub_date(start_month), "_bed-days-hb.csv"))
 )
 
 write_csv(
   bed_days_la,
-  here("output", format(start_month, "%Y-%m"),
-       paste0(format(start_month, "%Y-%m"), "_bed-days-la.csv"))
+  here("output", year(pub_date(start_month)),
+       pub_date(start_month), "publication",
+       paste0(pub_date(start_month), "_bed-days-la.csv"))
 )
 
 write_csv(
   census,
-  here("output", format(start_month, "%Y-%m"),
-       paste0(format(start_month, "%Y-%m"), "_census.csv"))
+  here("output", year(pub_date(start_month)),
+       pub_date(start_month), "publication",
+       paste0(pub_date(start_month), "_census.csv"))
 )
 
 

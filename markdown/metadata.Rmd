@@ -1,0 +1,206 @@
+---
+output: 
+  word_document:
+    reference_docx: !expr here::here("templates", "metadata-template.docx")
+    fig_caption: no
+---
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+source(here::here("code", "00_setup-environment.R"))
+```
+
+## PHS Delayed Discharges Monthly Publication
+
+<br>
+
+<Div custom-style = "Publication subtitle">This is a National Statistics Publication</Div>
+
+<Div custom-style = "Figure_Style">
+![National Statistics Quality Mark](`r here("templates", "national-stats-kitemark.jpg")`)
+</Div>
+
+National Statistics status means that the official statistics meet the highest standards of trustworthiness, quality and public value. They are identified by the quality mark shown above.
+
+The UK Statistics Authority has designated these statistics as National Statistics, signifying compliance with the Code of Practice for Statistics.
+
+Once statistics have been designated as National Statistics, it is a statutory requirement that the Code of Practice shall continue to be observed.
+
+The statistics last underwent a full [assessment](https://osr.statisticsauthority.gov.uk/publication/statistics-on-health-and-social-care-in-scotland/) by the Office for Statistics Regulation (OSR) against the Code of Practice in September 2011. The OSR is the regulatory arm of the UK Statistics Authority.
+
+Find out more about the Code of Practice by visiting the [UK Statistics Authority website](https://code.statisticsauthority.gov.uk/).
+
+Find out more about National Statistics on the [UK Statistics Authority website](https://code.statisticsauthority.gov.uk/glossary/#national-statistics).
+
+\newpage
+
+# Publication Metadata
+
+<br>
+
+**Publication title**
+
+Delayed Discharges in NHSScotland
+
+**Description**
+
+This publication provides monthly information on the number of hospital bed days associated with delayed discharges and the number of discharges from hospital following a period of delay for a full calendar month. Information is also provided on the number of people experiencing a delay in discharge from hospital at the monthly census point.
+
+Figures are shown for Scotland, NHS Board area of treatment and Local Authority of residence for people aged 18 and over who were clinically ready for discharge.
+
+**Theme**
+
+Health and Social Care
+
+**Topic**
+
+Delayed Discharges
+
+**Format**
+
+PDF and Excel
+
+**Data source(s)**
+
+Public Health Scotland (PHS) Delayed Discharge monthly data submission
+
+**Date that data are acquired**
+
+The number of people delayed as at a monthly census snapshot taken on the last Thursday of the month.
+
+The number of bed days occupied by people delayed in their discharge from hospital in the calendar month.
+
+The number of discharges from hospital following a period of delay in the calendar month.
+
+These data were submitted by NHS Boards to Public Health Scotland in `r format(start_month + months(1), "%B %Y")`.
+
+**Release date**
+
+`r format(pub_date(start_month), "%e %B %Y") %>% str_trim()`
+
+**Frequency**
+
+Monthly
+
+**Timeframe of data and timeliness**
+
+Data are available for publication within six to eight weeks of the census month.
+
+**Continuity of data**
+
+NHS Boards submit delayed discharge information to PHS for national reporting purposes.
+
+Revised data definitions manual and national data requirements were effective 1 July 2016 and can be found at https://beta.isdscotland.org/topics/delayed-discharges/data-definitions-and-submission/. For detailed changes to the definitions since 2005, see page 2 of the latest Delayed Discharge Definitions Manual effective 1 July 2016 and a [summary](http://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/Delayed-Discharges/_docs/NSS_Delayed_Discharges_Summary_of_definitional_changes_and_impact.docx) of changes and impact on national reporting. Limited trend information is available pre and post July 2016 due to the definitional changes and relevant notes have been added to the tables to explain this.
+
+Some NHS Boards used the EDISON system to record people delayed in their discharge from hospital. During 2018 EDISON was retired and affected Boards migrated to their own local system solutions. NHS Boards are still required to report on delayed discharges as specified in the data definitions and national reporting requirements effective 1 July 2016, therefore figures remain comparable and we do not expect any reduction in the quality of the data.
+
+**Revisions statement**
+
+Figures contained within each publication may also be subject to change in future publications. Further detail can be found on the [About our Statistics](https://beta.isdscotland.org/about-our-statistics/) section of the website.
+
+**Revisions relevant to this publication**
+
+This publication has no revisions.
+
+**Concepts and definitions**
+
+The delayed discharge data definitions manual (effective from 1 July 2016), national data requirements (effective 1 July 2016) and a summary of PHS validation checks are published at: https://beta.isdscotland.org/topics/delayed-discharges/data-definitions-and-submission/.
+
+**Relevance and key uses of the statistics**
+
+Key uses of delayed discharge information include monitoring policy obligations both locally and nationally, helping to troubleshoot in partnership areas with specific problems, facilitating benchmarking with other areas, identifying the potential release of resources to focus on more appropriate care and providing useful dialogue between health and social care agencies.
+
+Delayed discharge information is also used to respond to information requests (including FOI requests) from a variety of customers and parliamentary questions.
+
+**Accuracy**
+
+The data are considered accurate. Data are validated locally by partnerships. PHS carry out further validation checks in consultation with NHS Boards.
+
+**Completeness**
+
+100% of the data is used for analysis.
+
+**Comparability**
+
+Data are not comparable out with Scotland.
+
+Limited trend information is available pre and post July 2016 due to the definitional changes effective from 1 July 2016. Relevant notes have been added to the published tables to explain this.
+
+**Accessibility**
+
+It is the policy of Public Health Scotland (PHS) to make its web sites and products accessible according to [published guidelines](https://beta.isdscotland.org/front-matter/accessibility-statement/).
+
+**Coherence and clarity**
+
+All delayed discharge reports are accessible via the [PHS website](https://beta.isdscotland.org/topics/delayed-discharges/). Tables and charts are presented within an interactive Excel workbook with drop down boxes.
+
+**Value type and unit of measurement**
+
+Number of delays by length and reason at the census point.  
+Number of bed days occupied by delayed patients in a calendar month.  
+Number of discharges from hospital following a period of delay in a calendar month.
+
+**Disclosure**
+
+The [PHS protocol on Statistical Disclosure](https://beta.isdscotland.org/media/4191/public-health-scotland-statistical-disclosure-control-protocol.pdf) is followed.
+
+**Official Statistics designation**
+
+National Statistics
+
+**UK Statistics Authority Assessment**
+
+The statistics last underwent a full [assessment](https://osr.statisticsauthority.gov.uk/publication/statistics-on-health-and-social-care-in-scotland/) by the Office for Statistics Regulation (OSR) against the Code of Practice in September 2011.
+
+**Last published**
+
+`r format(pub_date(start_month - months(1)), "%e %B %Y") %>% str_trim()`
+
+**Next published**
+
+`r format(pub_date(start_month + months(1)), "%e %B %Y") %>% str_trim()`
+
+**Date of first publication**
+
+Historic quarterly data published from December 2000  
+Monthly data published from June 2015  
+First annual publication in June 2016
+
+**Help email**
+
+phs.delayeddischarges@phs.scot
+
+**Date form completed**
+
+`r format(today(), "%e %B %Y") %>% str_trim()`
+
+\newpage
+
+# Early access details
+
+<br>
+
+**Pre-Release Access**
+
+Under terms of the "Pre-Release Access to Official Statistics (Scotland) Order 2008", PHS is obliged to publish information on those receiving Pre-Release Access ("Pre-Release Access" refers to statistics in their final form prior to publication). The standard maximum Pre-Release Access is five working days. Shown below are details of those receiving standard Pre-Release Access.
+
+<br>
+
+**Standard Pre-Release Access:**
+
+Scottish Government Health Department
+
+NHS Board Chief Executives
+
+NHS Board Communication leads
+
+Chief Officers of Integrated Joint Boards formed under the [Public Bodies (Joint Working) (Scotland) Act 2014](http://www.legislation.gov.uk/asp/2014/9/contents/enacted)
+
+\newpage
+
+# PHS and Official Statistics
+
+<br>
+
+**About Public Health Scotland (PHS)**
+
+PHS is a knowledge-based and intelligence driven organisation with a critical reliance on data and information to enable it to be an independent voice for the public’s health, leading collaboratively and effectively across the Scottish public health system, accountable at local and national levels, and providing leadership and focus for achieving better health and wellbeing outcomes for the population. Our statistics comply with the [Code of Practice for Statistics](https://www.statisticsauthority.gov.uk/code-of-practice/the-code/) in terms of trustworthiness, high quality and public value. This also means that we keep data secure at all stages, through collection, processing, analysis and output production, and adhere to the ‘[five safes](https://blog.ons.gov.uk/2017/01/27/the-five-safes-data-privacy-at-ons/)’.

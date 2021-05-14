@@ -9,9 +9,6 @@ data/
 trend/
 output/
 
-# Markdown output
-summary.docx
-
 # Images
 *.png
 *.jpg
@@ -31,7 +28,17 @@ summary.docx
 *.[rR][dD][aA][tT][aA]
 *.[rR][dD][sS]
 
+# Word documents #
+*.[dD][oO][cC][xX]
+
 # Allow lookup files
 !lookups/acute-hospitals.rds
 !lookups/local-authority.rds
 !lookups/reason-for-delay.rds
+
+# Allow templates and kitemark
+!templates/discharges-template.xlsx
+!templates/code-100-template.xlsx
+!templates/summary-template.docx
+!templates/metadata-template.docx
+!templates/national-stats-kitemark.jpg

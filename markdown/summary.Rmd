@@ -1,16 +1,14 @@
 ---
 output: 
   word_document:
-    reference_docx: "templates/summary-template.docx"
+    reference_docx: !expr here::here("templates", "summary-template.docx")
     fig_caption: no
 ---
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 
-# Load setup environment file and all functions
+# Load setup environment file
 source(here::here("code", "00_setup-environment.R"))
-
-walk(list.files(here("functions"), full.names = TRUE), source)
 
 # Set global options
 options(scipen = 999)
@@ -18,11 +16,6 @@ options(scipen = 999)
 knit_hooks$set(inline = function(x){
   if(!is.character(x)){prettyNum(x, big.mark=",")}else{x}
 })
-
-# Function to round to next highest hundred - used in ggplot
-next_200 <- function(x){
-  ceiling(x / 200) * 200
-}
 
 # Derive various formats of month
 month_name <- format(start_month, "%B %Y")
@@ -125,62 +118,17 @@ census_over3 <-
   mutate(perc_total = census / sum(census) * 100,
          across(where(is.numeric), ~ round_half_up(., 0)))
 
-# Get data for chart and plot
-chart_data <- 
-  trend %>%
-  filter(between(census_date,
-                 start_month - months(24),
-                 end_month)) %>%
-  group_by(census_date, month) %>%
-  summarise(bed_days = sum(bed_days),
-            .groups = "drop") %>%
-  mutate(ave_bed_days = round_half_up(bed_days / days_in_month(census_date), 0),
-         month = format(census_date, "%b %y")) %>%
-  select(-bed_days)
-
-chart <-
-  chart_data %>%
-  mutate(month = fct_relevel(as.factor(month), chart_data$month)) %>%
-  ggplot(aes(x = month, y = ave_bed_days, group = 1)) +
-  geom_line(color = "#3f3685", size = 1) +
-  geom_point(color = "#3f3685", size = 2) +
-  theme(panel.background = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.major.y = element_line(color = "#d9d9d9"),
-        axis.title.y = element_text(size = 10, angle = 0, 
-                                    hjust = 0.5, vjust = 0.5),
-        axis.text = element_text(size = 10),
-        axis.text.x = 
-          element_text(
-            color = c("black", rep(c("transparent", "transparent", "black"), 8))),
-        axis.line = element_line(),
-        axis.title.x = element_blank()) +
-  scale_y_continuous(
-    limits = 
-      c(0, next_200(max(chart_data$ave_bed_days))),
-    breaks = 
-      seq(0, next_200(max(chart_data$ave_bed_days)), 
-          by = 200),
-    expand = c(0, 0)) +
-  ylab(str_wrap("Average number of beds occupied per day", width = 8))
-
-# Save chart to output folder
-ggsave(here("output", format(start_month, "%Y-%m"), 
-            paste0(format(start_month, "%Y-%m"), "_twitter-chart.png")), 
-       plot = chart,
-       width = 6.8, height = 3.5, 
-       device = "png", dpi = 600)
+# Conditional text for when percentages do not sum to 100%
+rounding_text <- if_else(
+  sum(census_over3$perc_total) != 100,
+  "[Due to rounding, the percentages do not add up to 100%].",
+  ""
+)
 
 # Chart alt text
-alt_text <- 
-  paste0("This is a line chart showing the average number of beds occupied ",
-         "per day by delayed discharges. The average number of beds occupied ",
-         "by delayed discharges peaks in October 2018, fluctuates during 2019, ",
-         "peaks again in February 2020, before reducing dramatically in ",
-         "April 2020. May 2020 figures were similar to April 2020 but since ",
-         "then there have been increases in each month from June 2020 to ",
-         month_name, ".")
+alt_text <- read_file(
+  here("output", year(pub_date(start_month)), pub_date(start_month),
+       "publication", paste0(pub_date(start_month), "_alt-text.txt")))
 
 # Create contact information
 contact1 <- 
@@ -189,9 +137,9 @@ contact1 <-
     "0131 275 6117",
     "phs.delayeddischarges@phs.scot")
 contact2 <- 
-  c("**Alice Byers**", 
+  c("**Jennifer Noall**", 
     "Senior Information Analyst", 
-    "0131 314 1725",
+    "0131 275 7720",
     "")
 
 contact <- tibble(contact1, contact2)
@@ -201,7 +149,7 @@ contact <- tibble(contact1, contact2)
 <Div custom-style = "Publication Title">Delayed Discharges in</Div>
 <Div custom-style = "Publication Title">NHSScotland</Div>
 <Div custom-style = "Publication subtitle">Figures for `r format(start_month, "%B %Y")`</Div>
-<Div custom-style = "National stats">A National Statistics statistical release for Scotland</Div>
+<Div custom-style = "National stats">A National Statistics release for Scotland</Div>
 
 <br>
 
@@ -213,33 +161,35 @@ contact <- tibble(contact1, contact2)
 This release by Public Health Scotland (PHS) provides a monthly update on the number of hospital bed days associated with delayed discharges and the number of discharges from hospital that followed a period of delay. Information is also provided on the number of people experiencing a delay in discharge from hospital at the monthly census point. The data relate to people aged 18 years and over who were clinically ready for discharge. Delayed discharge figures in NHSScotland have been affected by measures put in place to respond to COVID-19.
 
 ### Main Points
-* In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed. This is `r year_change_text` with the number of delayed days spent in hospital in `r prev_year_name` (`r prev_year_bd`).
+* In `r month_name`, there were `r beddays$bed_days` days spent in hospital by people whose discharge was delayed. This is `r year_change_text` with the number of delayed days in `r prev_year_name` (`r prev_year_bd`).
 
-* In `r month_name`, the average number of bed occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r month_change_text` to `r prev_month_name` when the daily average was `r prev_month_bd`, `r and_but` lower than the monthly average prior to COVID-19 measures being put in place.
-
-<br>
+* In `r month_name`, the average number of beds occupied per day due to delayed discharges was `r beddays$ave_bed_days`. This is `r month_change_text` to `r prev_month_name` when the daily average was `r prev_month_bd`, `r and_but` lower than the monthly average prior to COVID-19 measures being put in place.
 
 <Div custom-style = "Chart Title">Delayed Discharge bed use in Scotland from `r format(start_month - months(24), "%B %Y")` to `r month_name`</Div>
 <Div custom-style = "Figure_Style">
-```{r fig-uptake, echo=FALSE, fig.width=6.8, fig.height=3.5, fig.cap=alt_text}
-chart
+```{r chart, echo=FALSE, fig.cap = alt_text}
+include_graphics(
+  here("output", year(pub_date(start_month)), pub_date(start_month), 
+       "publication", paste0(pub_date(start_month), "_twitter-chart.png")), 
+  dpi = 600
+)
 ```
 </div>
 
-<br>
-
 * At the `r month_name` census point, there were `r census$census` people delayed. This is `r census_change` to the `r prev_month_name` census point when `r prev_census` people were delayed.
 
-* Of those delayed at the `r month_name` census point, `r sum(census_over3$census)` were delayed more than three days with health and social care reasons accounting for `r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(perc_total)`%), complex needs accounting for `r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(perc_total)`%) and patient and family-related reasons for `r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(perc_total)`%).
+* Of those delayed at the `r month_name` census point, `r sum(census_over3$census)` were delayed more than three days, with health and social care reasons accounting for `r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Health and Social Care Reasons") %>% pull(perc_total)`%), complex needs accounting for `r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Code 9") %>% pull(perc_total)`%) and patient and family-related reasons for `r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(census)` delays (`r census_over3 %>% filter(reason_group_1 == "Patient/Carer/Family-related Reasons") %>% pull(perc_total)`%). `r rounding_text`
 
 ### Background
 Timely discharge from hospital is an important indicator of quality and is a marker for person-centred, effective, integrated and harm-free care. A delayed discharge occurs when a hospital patient who is clinically ready for discharge from inpatient hospital care continues to occupy a hospital bed beyond the date they are ready for discharge. 
 
-The average number of beds occupied per day is calculated by dividing the total monthly number of delayed discharge bed days by the number of days in the calendar month. PHS considers this daily average a better statistic for comparing month on month differences as the number of days in a month varies.
+The average number of beds occupied per day is calculated by dividing the total monthly number of delayed discharge bed days by the number of days in the calendar month. PHS considers this daily average a better statistic for comparing month on month differences as the number of days in a month varies. The percentage change is based on rounded figures.
+
+Delayed discharge figures in NHSScotland have been affected by measures put in place to respond to COVID-19. The marked fall in delayed discharges is likely to be due to patients being moved out of hospital to increase capacity.
 
 The census figure reflects the position as at the last Thursday of the month.
 
-The latest [data definitions](https://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/Delayed-Discharges/Guidelines/docs/Delayed-discharge-Data-Definitions-Recording-Manual.pdf) and [national data requirements](https://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/Delayed-Discharges/Guidelines/docs/Delayed-discharge-National-Data-Requirements.pdf) came into effect on 1 July 2016. 
+The latest [data definitions](https://beta.isdscotland.org/media/6769/dd-data-definitions-manual.pdf) and [national data requirements](https://beta.isdscotland.org/media/6767/dd-national-data-requirements.pdf) came into effect on 1 July 2016. 
 
 It should be noted that figures presented in this publication are not directly comparable with other UK countries, due to differences in definitions and data reporting.
 
@@ -248,7 +198,7 @@ It should be noted that figures presented in this publication are not directly c
 
 <Div custom-style = "Normal-no-space">
 ```{r tab_contact, echo = FALSE}
-suppressWarnings(kable(contact, col.names = NULL))
+suppressWarnings(kable(contact, format = "simple", col.names = NULL))
 ```
 </Div>
 
@@ -260,6 +210,10 @@ Data from this publication, along with background information, glossary, and a m
 For more information on delayed discharges see the [delayed discharge section of our website](https://beta.isdscotland.org/topics/delayed-discharges/). For related topics, please see the [health and social community care pages](http://www.isdscotland.org/Health-Topics/Health-and-Social-Community-Care/).
 
 The next release of this publication will be `r next_pub_date_full`.
+
+Other formats of this publication are available on request at:  
+0131 314 5300  
+[phs.otherformats@phs.scot](mailto:phs.otherformats@phs.scot)
 
 ### NHS Performs
 A selection of information from this publication is included in [NHS Performs](http://www.nhsperforms.scot/). NHS Performs is a website that brings together a range of information on how hositals and NHS Boards within NHSScotland are performing.

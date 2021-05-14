@@ -1,8 +1,8 @@
 #########################################################################
-# Name of file - 02_create-scotland-file.R
+# Name of file - 01_create-scotland-file.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - July 2020
+# Original Date - July 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server
@@ -13,11 +13,27 @@
 #########################################################################
 
 
-### 0 - Load setup environment and functions ----
+### 0 - Load setup environment ----
 
 source(here::here("code", "00_setup-environment.R"))
 
-walk(list.files(here("functions"), full.names = TRUE), source)
+
+### 0a - Copy data files from 'Single Submissions' folder
+
+# This is a temporary step until the submission/validation process is
+# integrated into the RAP project. See SOP for more details.
+
+walk(
+  boards,
+  ~ file.copy(
+    paste0(
+      "/conf/delayed_discharges/Data files/Single Submissions (July 2016 ",
+      "onwards)/", format(start_month, "%Y_%m"), "/Data/", .x, "/", .x, ".csv"
+    ),
+    here("data", format(start_month, "%Y-%m"), "submitted", 
+         .x, paste0(.x, ".csv"))
+  )
+)
 
 
 ### 1 - Read in csv file for each board and add together ----
@@ -73,6 +89,12 @@ scotland %<>%
   )) %>%
   select(-la_desc)
 
+# Check all local authorities are in lookup
+if(any(!(scotland$local_authority %in% 
+         read_rds(here("lookups", "local-authority.rds"))$la_desc))){
+  stop("At least one local authority submitted not in lookup file.")
+}
+
 # Recode out of area flag
 scotland %<>%
   mutate(out_of_area = 
@@ -87,7 +109,9 @@ scotland %<>%
   mutate(sex = 
            case_when(
              str_detect(sex, "(1|M)") ~ "Male",
-             str_detect(sex, "(2|F)") ~ "Female"
+             str_detect(sex, "(2|F)") ~ "Female",
+             as.numeric(str_sub(chi, 9, 9)) %% 2 == 1 ~ "Male",
+             as.numeric(str_sub(chi, 9, 9)) %% 2 == 0 ~ "Female"
            ))
 
 # Code missing reason for delay as 11A

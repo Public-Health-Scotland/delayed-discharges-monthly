@@ -2,7 +2,7 @@
 # Name of file - read_clean_data.R
 # Data release - Monthly Delayed Discharges publication
 # Original Authors - Alice Byers
-# Orginal Date - July 2020
+# Original Date - July 2020
 #
 # Type - Reproducible Analytical Pipeline (RAP)
 # Written/run on - RStudio Server
@@ -70,14 +70,28 @@ read_clean_data <- function(filepath){
                     sex, discharge_reason),
                   ~ str_remove_all(., "^0*"))) %>%
     
+    # Recode Aberdeen to Aberdeen City 
+    # (DQ issue to be addressed in review of validation process)
+    mutate(local_authority = if_else(
+      local_authority == "Aberdeen", "Aberdeen City", local_authority
+    )) %>%
+    
     # Code all blanks as NA
-    mutate(across(everything(), ~ na_if(., ""))) %>%
+    mutate(across(where(is.character), ~ na_if(., ""))) %>%
     
     # Ensure all reason for delay codes upper case
     mutate(across(contains("delay_reason"), toupper)) %>%
     
     # Format dates
-    mutate(across(contains("date"), dmy)) %>%
+    mutate(across(
+      contains("date"),
+      ~ case_when(
+        is.na(.) ~ NA_Date_,
+        # Excel format
+        nchar(.) == 5 ~ excel_numeric_to_date(suppressWarnings(as.numeric(.))),
+        TRUE ~ dmy(.)
+      )
+    )) %>%
     
     # Pad CHI Number
     mutate(chi = chi_pad(chi)) %>%
